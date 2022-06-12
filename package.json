@@ -36,14 +36,14 @@
   "author": "",
   "dependencies": {
     "@babel/runtime": "^7.18.3",
+    "@taroify/core": "^0.0.29-alpha.9",
     "@tarojs/components": "3.4.11",
     "@tarojs/plugin-framework-react": "3.4.11",
     "@tarojs/react": "3.4.11",
     "@tarojs/runtime": "3.4.11",
     "@tarojs/taro": "3.4.11",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "taro-ui": "^2.3.4"
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.18.2",

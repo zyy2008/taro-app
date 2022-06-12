@@ -1,23 +1,27 @@
-import { Component } from "react";
-import { View, Text } from "@tarojs/components";
+import { FC, Component } from "react";
+import { Flex } from "@taroify/core";
+import { Header } from "./components";
 import "./index.scss";
 
-export default class Index extends Component {
-  componentWillMount() {}
+const Index: FC = () => {
+  return (
+    <Flex direction="column" className="home">
+      <Flex.Item
+        style={{
+          width: "100%",
+        }}
+      >
+        <Header />
+      </Flex.Item>
+      <Flex.Item
+        style={{
+          flex: 1,
+        }}
+      >
+        123
+      </Flex.Item>
+    </Flex>
+  );
+};
 
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
-  render() {
-    return (
-      <View className="index">
-        <Text>Hello world!123</Text>
-      </View>
-    );
-  }
-}
+export default Index;
