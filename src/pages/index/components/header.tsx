@@ -17,10 +17,9 @@ const Header: React.FC = () => {
         <ScrollView
           style={{
             height: "30px",
-            display: "flex",
-            width: "300px",
+            whiteSpace: "nowrap",
+            display: "grid",
           }}
-          enableFlex
           scrollX
           scrollY={false}
           scrollAnchoring
@@ -40,6 +39,7 @@ const Header: React.FC = () => {
                   borderWidth: "1px",
                   borderStyle: "solid",
                   borderColor: "red",
+                  display: "inline-block",
                 }}
               >
                 {index}

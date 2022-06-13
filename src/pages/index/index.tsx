@@ -1,4 +1,4 @@
-import { FC, Component } from "react";
+import { FC } from "react";
 import { Flex } from "@taroify/core";
 import { Header } from "./components";
 import "./index.scss";
