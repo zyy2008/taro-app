@@ -1,0 +1,16 @@
+.header {
+  .taroify-navbar__title {
+    max-width: calc(100% - 110px);
+    position: absolute;
+    left: 55px;
+    right: 55px;
+    height: 60px;
+    line-height: 60px;
+  }
+}
+
+.tab-item {
+  height: 100%;
+  display: inline-block;
+  padding: 0 15px;
+}

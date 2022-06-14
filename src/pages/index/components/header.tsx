@@ -1,56 +1,74 @@
 import React from "react";
-import { Flex, Button } from "@taroify/core";
+import { Flex, Button, Navbar } from "@taroify/core";
 import { Search, AppsOutlined } from "@taroify/icons";
 import { ScrollView, View } from "@tarojs/components";
+import "./header.scss";
+
+const items: string[] = [
+  "景点",
+  "卫生间",
+  "出入口",
+  "服务点",
+  "商场",
+  "售票处",
+  "停车场",
+  "派出所",
+  "其他",
+];
 
 const Header: React.FC = () => {
+  const [scrollIntoView, setScrollIntoView] = React.useState<string>("");
   return (
-    <Flex>
-      <Flex.Item>
-        <Button size="small" variant="text" icon={<Search size={20} />} />
-      </Flex.Item>
-      <Flex.Item
-        style={{
-          flex: 1,
-        }}
-      >
+    <Navbar
+      className="header"
+      title={
         <ScrollView
           style={{
-            height: "30px",
+            height: "100%",
             whiteSpace: "nowrap",
-            display: "grid",
           }}
+          scrollIntoView={scrollIntoView}
           scrollX
           scrollY={false}
           scrollAnchoring
           scrollWithAnimation
           showScrollbar={false}
           enhanced
+          fastDeceleration
+          onScroll={({ detail: { scrollLeft } }) => {
+            if (Math.floor(scrollLeft) % 30 === 0) {
+              console.log(scrollLeft);
+            }
+          }}
         >
-          {Array(30)
-            .fill(0)
-            .map((_, index) => (
+          {items.map((text, index) => {
+            const id = `dom${index}`;
+            return (
               <View
-                id={`dom${index}`}
+                id={id}
+                className="tab-item"
                 key={index}
-                style={{
-                  width: 60,
-                  height: 30,
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderColor: "red",
-                  display: "inline-block",
+                onClick={() => {
+                  setScrollIntoView(id);
                 }}
+                style={
+                  scrollIntoView === id
+                    ? {
+                        backgroundColor: "red",
+                      }
+                    : {}
+                }
               >
-                {index}
+                {text}
               </View>
-            ))}
+            );
+          })}
         </ScrollView>
-      </Flex.Item>
-      <Flex.Item>
-        <Button size="small" variant="text" icon={<AppsOutlined size={20} />} />
-      </Flex.Item>
-    </Flex>
+      }
+    >
+      <Navbar.NavLeft icon={<Search size={20} />} />
+      <Navbar.NavRight icon={<AppsOutlined size={20} />} />
+    </Navbar>
   );
 };
 
