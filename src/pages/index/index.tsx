@@ -1,10 +1,11 @@
 import { FC } from "react";
-import { Flex, Button } from "@taroify/core";
-import { Map, CoverView } from "@tarojs/components";
+import { Flex } from "@taroify/core";
+import { Map, CoverView, Button, CoverImage } from "@tarojs/components";
 import { Header } from "./components";
 import { Aim } from "@taroify/icons";
 import Taro from "@tarojs/taro";
 import "./index.scss";
+import img from "./assets/location.png";
 
 const Index: FC = () => {
   return (
@@ -33,28 +34,20 @@ const Index: FC = () => {
           showLocation
           scale={15}
           id="myMap"
-        />
-        <CoverView className="location">
-          <Button
-            icon={
-              <Aim
-                style={{
-                  margin: 0,
-                }}
-                size={20}
+        >
+          <CoverView className="location">
+            <Button className="button">
+              <CoverImage
+                className="img"
+                src={img}
                 onClick={() => {
                   const mapCtx = Taro.createMapContext("myMap");
                   mapCtx.moveToLocation({});
                 }}
               />
-            }
-            shape="round"
-            style={{
-              width: 30,
-              height: 30,
-            }}
-          />
-        </CoverView>
+            </Button>
+          </CoverView>
+        </Map>
       </Flex.Item>
     </Flex>
   );
