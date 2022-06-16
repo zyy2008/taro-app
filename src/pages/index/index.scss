@@ -3,3 +3,25 @@
   height: 100%;
   width: 100%;
 }
+.lines {
+  position: absolute;
+  margin: auto;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+  width: 145px;
+  height: 145px;
+  background-color: #fff;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .button {
+    width: 130px;
+    height: 130px;
+    border-radius: 100%;
+    white-space: pre-wrap;
+    font-size: 40px;
+    padding: 10px !important;
+  }
+}

@@ -2,6 +2,8 @@ import { FC } from "react";
 import { Flex } from "@taroify/core";
 import { Header } from "./components";
 import { Map } from "@/components/index";
+import { CoverView, Button } from "@tarojs/components";
+import Taro from "@tarojs/taro";
 import "./index.scss";
 
 const Index: FC = () => {
@@ -21,7 +23,20 @@ const Index: FC = () => {
           position: "relative",
         }}
       >
-        <Map />
+        <Map>
+          <CoverView className="lines">
+            <Button
+              className="button"
+              onClick={() => {
+                Taro.navigateTo({
+                  url: "lines",
+                });
+              }}
+            >
+              游览线路
+            </Button>
+          </CoverView>
+        </Map>
       </Flex.Item>
     </Flex>
   );
