@@ -20,7 +20,11 @@
     "resolveJsonModule": true,
     "typeRoots": [
       "node_modules/@types"
-    ]
+    ],
+    "paths": {
+      "@/components/*": ["src/components/*"],
+      "@/assets/*": ["src/assets/*"],
+    }
   },
   "include": ["./src", "global.d.ts"],
   "compileOnSave": false
