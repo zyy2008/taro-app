@@ -1,0 +1,25 @@
+.lines {
+  .taroify-cell__title {
+    flex: none;
+    padding-right: 20px;
+  }
+  .taroify-image {
+    display: block;
+  }
+  .taroify-cell__value {
+    text-align: left;
+  }
+  .taroify-flex-item {
+    margin-bottom: 0;
+    line-height: 40px;
+  }
+  .taroify-image {
+    border-radius: 12px;
+  }
+  text {
+    color: #000;
+  }
+  .title {
+    font-size: 30px;
+  }
+}

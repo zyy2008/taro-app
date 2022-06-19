@@ -29,7 +29,7 @@ const Index: FC = () => {
               className="button"
               onClick={() => {
                 Taro.navigateTo({
-                  url: "lines",
+                  url: "/pages/lines/index",
                 });
               }}
             >
