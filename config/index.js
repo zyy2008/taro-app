@@ -16,6 +16,7 @@ const config = {
   alias: {
     "@/components": path.resolve(__dirname, "..", "src/components"),
     "@/assets": path.resolve(__dirname, "..", "src/assets"),
+    "@/labs": path.resolve(__dirname, "..", "src/labs"),
   },
   copy: {
     patterns: [],

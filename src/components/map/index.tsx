@@ -9,6 +9,8 @@ import Taro, { MapContext } from "@tarojs/taro";
 import img from "@/assets/location.png";
 import "./index.scss";
 
+import QQMapWX from "@/labs/qqmap-wx-jssdk.min.js";
+
 const points: [number, number][] = [
   [34.303643, 108.955564],
   [34.304005, 108.969784],
@@ -18,6 +20,7 @@ const points: [number, number][] = [
 
 const Map: React.FC = ({ children }) => {
   const [mapCtx, setMapCtx] = useState<MapContext>();
+  console.log(QQMapWX);
   useEffect(() => {
     const ctx = Taro.createMapContext("myMap");
     ctx.addGroundOverlay({

@@ -24,6 +24,7 @@
     "paths": {
       "@/components/*": ["src/components/*"],
       "@/assets/*": ["src/assets/*"],
+      "@/labs/*": ["src/labs/*"],
     }
   },
   "include": ["./src", "global.d.ts"],
