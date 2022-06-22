@@ -1,5 +1,9 @@
 
-type LocationInfo = {
+type X = {
+  type: number
+}
+
+declare type LocationInfo = {
   adcode?: number,
   address?: string,
   city?: string,
@@ -17,7 +21,7 @@ type LocationInfo = {
   title?: string,
   ud_id?: string,
   update_time?: number,
-  x?: object
+  x: X
 }
 
 type ResultData = {

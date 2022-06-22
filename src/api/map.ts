@@ -7,3 +7,13 @@ export async function contain(data: { location?: string }) {
     data
   })
 }
+
+export async function list() {
+  return Taro.request<Result>({
+    url: '/place_cloud/data/list',
+    method: 'GET',
+    data: {
+      page_size: 100
+    }
+  })
+}

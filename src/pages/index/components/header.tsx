@@ -4,20 +4,25 @@ import { Search, AppsOutlined } from "@taroify/icons";
 import { ScrollView, View } from "@tarojs/components";
 import "./header.scss";
 
-const items: string[] = [
-  "景点",
-  "卫生间",
-  "出入口",
-  "服务点",
-  "商场",
-  "售票处",
-  "停车场",
-  "派出所",
-  "其他",
+const items: { label: string; value: string }[] = [
+  {
+    label: "建筑物",
+    value: "building",
+  },
+  {
+    label: "卫生间",
+    value: "ashcan",
+  },
+  {
+    label: "服务点",
+    value: "service",
+  },
 ];
 
-const Header: React.FC = () => {
-  const [scrollIntoView, setScrollIntoView] = React.useState<string>("");
+const Header: React.FC<{
+  scrollIntoView: string;
+  setScrollIntoView: (T: string) => void;
+}> = ({ scrollIntoView, setScrollIntoView }) => {
   return (
     <Navbar
       className="header"
@@ -26,6 +31,7 @@ const Header: React.FC = () => {
           style={{
             height: "100%",
             whiteSpace: "nowrap",
+            textAlign: "left",
           }}
           scrollIntoView={scrollIntoView}
           scrollX
@@ -41,25 +47,24 @@ const Header: React.FC = () => {
             }
           }}
         >
-          {items.map((text, index) => {
-            const id = `dom${index}`;
+          {items.map(({ label, value }) => {
             return (
               <View
-                id={id}
+                id={value}
                 className="tab-item"
-                key={index}
+                key={value}
                 onClick={() => {
-                  setScrollIntoView(id);
+                  setScrollIntoView(value);
                 }}
                 style={
-                  scrollIntoView === id
+                  scrollIntoView === value
                     ? {
                         backgroundColor: "red",
                       }
                     : {}
                 }
               >
-                {text}
+                {label}
               </View>
             );
           })}

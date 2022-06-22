@@ -18,13 +18,13 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "resolveJsonModule": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types"],
     "paths": {
+      "@/store/*": ["src/store/*"],
       "@/components/*": ["src/components/*"],
       "@/assets/*": ["src/assets/*"],
       "@/labs/*": ["src/labs/*"],
+      "@/api/*": ["src/api/*"]
     }
   },
   "include": ["./src", "global.d.ts"],

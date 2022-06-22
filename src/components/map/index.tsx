@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Map as BaseMap,
   CoverView,
   CoverImage,
   Button,
+  MapProps,
 } from "@tarojs/components";
 import { Toast } from "@taroify/core";
 import Taro, { MapContext } from "@tarojs/taro";
 import img from "@/assets/location.png";
 import "./index.scss";
 import QQMapWX from "@/labs/qqmap-wx-jssdk.min.js";
-import { contain } from "./service";
+import { contain } from "@/api/map";
+import { useModel } from "foca";
+import { mapModel, MapState } from "@/store/models/map";
 
 const points: [number, number][] = [
   [34.303643, 108.955564],
@@ -19,38 +22,38 @@ const points: [number, number][] = [
   [34.280648, 108.956501],
 ];
 
-const Map: React.FC = ({ children }) => {
-  // const [mapCtx, setMapCtx] = useState<MapContext>();
-  // useEffect(() => {
-  //   const ctx = Taro.createMapContext("myMap");
-  //   console.log("444");
-  //   console.log(process.env.NODE_ENV);
-  //   ctx.addGroundOverlay({
-  //     id: 1,
-  //     src: "https://static.runoob.com/images/demo/demo1.jpg",
-  //     bounds: {
-  //       southwest: {
-  //         latitude: 34.30297,
-  //         longitude: 108.97041,
-  //       },
-  //       northeast: {
-  //         latitude: 34.280669,
-  //         longitude: 108.956248,
-  //       },
-  //     },
-  //     success: () => {
-  //       console.log("成功");
-  //     },
-  //     fail: (e) => {
-  //       console.log("失败");
-  //       console.log(e);
-  //     },
-  //     complete: (e) => {
-  //       console.log(e);
-  //     },
-  //   });
-  //   setMapCtx(ctx);
-  // }, []);
+const apiContain = async (location: string) => {
+  const { data } = await contain({
+    location,
+  });
+  const { result } = data;
+  if (result?.count === 0) {
+    Toast.open({
+      message: "当前位置不在景区内",
+    });
+  }
+};
+
+const Map: React.FC<{ scrollIntoView: string }> = ({
+  children,
+  scrollIntoView,
+}) => {
+  const [location, setLocation] = useState<string>("");
+  const map = useModel<MapState>(mapModel);
+  useEffect(() => {
+    mapModel.get();
+  }, []);
+
+  const markers = useMemo<MapProps.marker[]>(() => {
+    const values = map?.[scrollIntoView] as LocationInfo[];
+    console.log(values);
+    return values.map(({ title, id, location }) => ({
+      title,
+      id,
+      latitude: location?.lat,
+      longitude: location?.lng,
+    }));
+  }, [scrollIntoView]);
 
   return (
     <>
@@ -64,6 +67,7 @@ const Map: React.FC = ({ children }) => {
         showLocation
         scale={15}
         id="myMap"
+        markers={markers}
         polygons={[
           {
             points: points.map(([latitude, longitude]) => ({
@@ -79,19 +83,19 @@ const Map: React.FC = ({ children }) => {
         <CoverView className="location">
           <Button
             className="button"
-            onClick={async () => {
+            onClick={() => {
               Taro.getLocation({
                 isHighAccuracy: true,
+                complete: (res) => {
+                  console.log(res);
+                },
                 success: async ({ latitude, longitude }) => {
-                  const { data } = await contain({
-                    location: `${latitude},${longitude}`,
-                  });
-                  const { status } = data;
-                  if (status === 0) {
-                    Toast.open({
-                      message: "当前位置不在景区内",
-                    });
-                  }
+                  const str = `${latitude},${longitude}`;
+                  setLocation(str);
+                  apiContain("34.282468,108.966244");
+                },
+                fail: () => {
+                  apiContain(location);
                 },
               });
             }}
@@ -106,4 +110,4 @@ const Map: React.FC = ({ children }) => {
   );
 };
 
-export default Map;
+export default React.memo(Map);

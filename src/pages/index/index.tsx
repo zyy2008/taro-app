@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React, { FC, useCallback } from "react";
 import { Flex } from "@taroify/core";
 import { Header } from "./components";
 import { Map } from "@/components/index";
@@ -7,6 +7,11 @@ import Taro from "@tarojs/taro";
 import "./index.scss";
 
 const Index: FC = () => {
+  const [scrollIntoView, setScrollIntoView] =
+    React.useState<string>("building");
+  const useScrollIntoView = useCallback((val) => {
+    setScrollIntoView(val);
+  }, []);
   return (
     <Flex direction="column" className="home">
       <Flex.Item
@@ -14,7 +19,10 @@ const Index: FC = () => {
           width: "100%",
         }}
       >
-        <Header />
+        <Header
+          scrollIntoView={scrollIntoView}
+          setScrollIntoView={useScrollIntoView}
+        />
       </Flex.Item>
       <Flex.Item
         style={{
@@ -23,7 +31,7 @@ const Index: FC = () => {
           position: "relative",
         }}
       >
-        <Map>
+        <Map scrollIntoView={scrollIntoView}>
           <CoverView className="lines">
             <Button
               className="button"
