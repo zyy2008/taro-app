@@ -7,7 +7,9 @@ import Taro from "@tarojs/taro";
 import { useModel } from "foca";
 import { mapModel, MapState } from "@/store/models/map";
 import "./index.scss";
-import jz from "@/assets/marker/jz.png";
+import jzw from "@/assets/marker/jzw.png";
+import ljt from "@/assets/marker/ljt.png";
+import fwd from "@/assets/marker/fwd.png";
 
 const Index: FC = () => {
   const mapRef = useRef<MapHandle>(null);
@@ -20,24 +22,58 @@ const Index: FC = () => {
 
   const markers = useMemo<Omit<MapProps.marker, "label">[]>(() => {
     const values = map?.[scrollIntoView] as LocationInfo[];
-    return values.map(({ title, id, location }) => ({
+    return values.map(({ title, location, x, create_time }) => ({
       title,
-      id,
+      id: create_time,
       latitude: location?.lat,
       longitude: location?.lng,
-      iconPath: jz,
-      width: 40,
-      height: 40,
+      // joinCluster: true,
+      iconPath: (() => {
+        switch (x.type) {
+          case 1:
+            return jzw;
+          case 2:
+            return ljt;
+          default:
+            return fwd;
+        }
+      })(),
+      width: 33,
+      height: 39,
+      customCallout: {
+        display: "BYCLICK",
+        anchorY: 10,
+        anchorX: 0,
+      },
+      ariaLabel: "0000",
+      anchor: { x: 0, y: 1 },
       label: {
         fontSize: 12,
         padding: 5,
         content: title,
         color: "#fff",
-        bgColor: "rgba(0,0,0,.1)",
+        bgColor: "#00000070",
         borderRadius: 2,
-        anchorY: -5,
         textAlign: "center",
-        anchorX: -20,
+        anchorX: (() => {
+          switch (title.length) {
+            case 1:
+              return -2;
+            case 2:
+              break;
+            case 3:
+              return -6;
+            case 4:
+              return -12;
+            case 5:
+              break;
+            case 6:
+              return -26;
+            default:
+              break;
+          }
+          return 0;
+        })(),
       },
     }));
   }, [map, scrollIntoView]);
@@ -82,7 +118,15 @@ const Index: FC = () => {
           longitude={center.longitude}
           latitude={center.latitude}
           markers={markers}
-        />
+        >
+          <CoverView slot="callout">
+            {markers.map(({ id }) => (
+              <CoverView markerId={`${id}`} key={id}>
+                123
+              </CoverView>
+            ))}
+          </CoverView>
+        </Map>
         <Button
           className="button"
           variant="text"
