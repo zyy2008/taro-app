@@ -3,7 +3,9 @@
   height: 100%;
   width: 100%;
 }
-.lines {
+.line {
+}
+.button {
   position: absolute;
   margin: auto;
   bottom: 50px;
@@ -16,12 +18,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  .button {
-    width: 120px;
-    height: 120px;
+
+  .text {
+    width: 80px;
     border-radius: 100%;
     white-space: pre-wrap;
     font-size: 35px;
-    padding: 10px !important;
   }
 }

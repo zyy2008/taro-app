@@ -1,18 +1,12 @@
 import React, { useEffect, useState, useImperativeHandle } from "react";
-import {
-  Map as BaseMap,
-  CoverView,
-  CoverImage,
-  Button,
-  MapProps,
-} from "@tarojs/components";
-import { Toast } from "@taroify/core";
+import { Map as BaseMap, MapProps } from "@tarojs/components";
+import { Toast, Button } from "@taroify/core";
 import Taro, { MapContext } from "@tarojs/taro";
-import img from "@/assets/location.png";
 import "./index.scss";
 import QQMapWX from "@/labs/qqmap-wx-jssdk.min.js";
 import { contain } from "@/api/map";
 import { mapModel } from "@/store/models/map";
+import { Aim } from "@taroify/icons";
 
 export type MapHandle = {
   mapCtx: MapContext;
@@ -79,31 +73,33 @@ const Map: React.FC<
           },
         ]}
       >
-        <CoverView className="location">
-          <Button
-            className="button"
-            onClick={() => {
-              Taro.getLocation({
-                isHighAccuracy: true,
-                complete: (res) => {
-                  console.log(res);
-                },
-                success: async ({ latitude, longitude }) => {
-                  const str = `${latitude},${longitude}`;
-                  setLocation(str);
-                  apiContain("34.282468,108.966244");
-                },
-                fail: () => {
-                  apiContain(location);
-                },
-              });
-            }}
-          >
-            <CoverImage className="img" src={img} />
-          </Button>
-        </CoverView>
         {children}
       </BaseMap>
+      <Button
+        className="location"
+        variant="text"
+        icon={
+          <Aim
+            size={20}
+            style={{
+              margin: 0,
+            }}
+          />
+        }
+        onClick={() => {
+          Taro.getLocation({
+            isHighAccuracy: true,
+            success: async ({ latitude, longitude }) => {
+              const str = `${latitude},${longitude}`;
+              setLocation(str);
+              apiContain(str);
+            },
+            fail: () => {
+              apiContain(location);
+            },
+          });
+        }}
+      />
       <Toast id="toast" />
     </>
   );

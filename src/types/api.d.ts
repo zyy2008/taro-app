@@ -22,7 +22,7 @@ declare type LocationInfo = {
   polygon?: string;
   province?: string;
   tel?: string;
-  title?: string;
+  title: string;
   ud_id?: string;
   update_time?: number;
   x: X;
