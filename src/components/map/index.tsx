@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useImperativeHandle } from "react";
 import {
   Map as BaseMap,
   CoverView,
@@ -12,8 +12,11 @@ import img from "@/assets/location.png";
 import "./index.scss";
 import QQMapWX from "@/labs/qqmap-wx-jssdk.min.js";
 import { contain } from "@/api/map";
-import { useModel } from "foca";
-import { mapModel, MapState } from "@/store/models/map";
+import { mapModel } from "@/store/models/map";
+
+export type MapHandle = {
+  mapCtx: MapContext;
+};
 
 const points: [number, number][] = [
   [34.303643, 108.955564],
@@ -34,62 +37,36 @@ const apiContain = async (location: string) => {
   }
 };
 
-const Map: React.FC<{
-  scrollIntoView: string;
-  children?: React.ReactNode;
-}> = ({ children, scrollIntoView }) => {
+const Map: React.FC<
+  {
+    scrollIntoView: string;
+    children?: React.ReactNode;
+  } & MapProps
+> = React.forwardRef(({ children, scrollIntoView, ...others }, ref) => {
   const [mapCtx, setMapCtx] = useState<MapContext>();
   const [location, setLocation] = useState<string>("");
-  const map = useModel<MapState>(mapModel);
   useEffect(() => {
     const ctx = Taro.createMapContext("myMap");
     setMapCtx(ctx);
     mapModel.get();
   }, []);
-
-  const markers = useMemo<MapProps.marker[]>(() => {
-    const values = map?.[scrollIntoView] as LocationInfo[];
-    return values.map(({ title, id, location }) => ({
-      title,
-      id,
-      latitude: location?.lat,
-      longitude: location?.lng,
-      iconPath: "",
-    }));
-  }, [map, scrollIntoView]);
-
-  const center = useMemo<LocationCenter>(() => {
-    const {
-      center: [latitude, longitude],
-    } = map;
-    return {
-      latitude,
-      longitude,
-    };
-  }, [map]);
-
-  useEffect(() => {
-    if (mapCtx) {
-      console.log(center);
-      mapCtx?.moveToLocation(center);
-    }
-  }, [scrollIntoView, mapCtx, center]);
+  useImperativeHandle<MapHandle, any>(ref, () => ({
+    mapCtx,
+  }));
 
   return (
     <>
       <BaseMap
+        {...others}
         style={{
           width: "100%",
           height: "100%",
         }}
         maxScale={20}
         minScale={14}
-        longitude={center.longitude}
-        latitude={center.latitude}
         showLocation
         scale={14}
         id="myMap"
-        markers={markers}
         polygons={[
           {
             points: points.map(([latitude, longitude]) => ({
@@ -130,6 +107,6 @@ const Map: React.FC<{
       <Toast id="toast" />
     </>
   );
-};
+});
 
 export default React.memo(Map);
