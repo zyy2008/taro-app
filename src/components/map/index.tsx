@@ -46,12 +46,12 @@ const Map: React.FC<{ scrollIntoView: string }> = ({
 
   const markers = useMemo<MapProps.marker[]>(() => {
     const values = map?.[scrollIntoView] as LocationInfo[];
-    console.log(values);
     return values.map(({ title, id, location }) => ({
       title,
       id,
       latitude: location?.lat,
       longitude: location?.lng,
+      iconPath: "",
     }));
   }, [scrollIntoView]);
 

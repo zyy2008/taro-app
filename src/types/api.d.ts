@@ -10,10 +10,10 @@ declare type LocationInfo = {
   create_time?: number,
   district?: string,
   geometry_type?: number,
-  id?: string,
-  location?: {
-    lat?: number,
-    lng?: number
+  id?: number,
+  location: {
+    lat: number,
+    lng: number
   },
   polygon?: string,
   province?: string,
