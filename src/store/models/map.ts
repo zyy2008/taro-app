@@ -1,55 +1,65 @@
-import { defineModel } from 'foca';
-import { list } from '@/api/map'
+import { defineModel } from "foca";
+import { list } from "@/api/map";
 
 export type MapState = {
-  building?: LocationInfo[],
-  ashcan?: LocationInfo[],
-  service?: LocationInfo[],
-}
+  building?: LocationInfo[];
+  ashcan?: LocationInfo[];
+  service?: LocationInfo[];
+  center: number[];
+};
 
 const initialState: MapState = {
   building: [],
   ashcan: [],
-  service: []
-}
+  service: [],
+  center: [],
+};
 
-export const mapModel = defineModel('map', {
+export const mapModel = defineModel("map", {
   initialState,
   actions: {
     setState: (state, mapState: MapState) => {
       state.building = mapState.building ?? [];
       state.ashcan = mapState.ashcan ?? [];
       state.service = mapState.service ?? [];
-    }
+      state.center = mapState.center ?? [];
+    },
   },
   effects: {
     async get() {
       const { data } = await list();
-      const { result } = data
-      const building: LocationInfo[] = [], ashcan: LocationInfo[] = [], service: LocationInfo[] = [];
+      const { result } = data;
+      const building: LocationInfo[] = [],
+        ashcan: LocationInfo[] = [],
+        service: LocationInfo[] = [],
+        center: number[] = [];
       if (result?.count ?? 0 > 0) {
         result?.data?.map((item) => {
-          const { x } = item
+          const { x } = item;
           switch (x.type) {
+            case 0:
+              center.push(...[item.location.lat, item.location.lng]);
+              break;
             case 1:
-              building.push(item)
+              building.push(item);
               break;
             case 2:
-              ashcan.push(item)
+              ashcan.push(item);
               break;
             case 3:
-              service.push(item)
+              service.push(item);
               break;
             default:
               break;
           }
-        })
+        });
       }
       this.setState({
         building,
         ashcan,
-        service
+        service,
+        center,
       });
     },
-  }
+  },
 });

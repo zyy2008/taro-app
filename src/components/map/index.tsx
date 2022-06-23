@@ -34,13 +34,16 @@ const apiContain = async (location: string) => {
   }
 };
 
-const Map: React.FC<{ scrollIntoView: string }> = ({
-  children,
-  scrollIntoView,
-}) => {
+const Map: React.FC<{
+  scrollIntoView: string;
+  children?: React.ReactNode;
+}> = ({ children, scrollIntoView }) => {
+  const [mapCtx, setMapCtx] = useState<MapContext>();
   const [location, setLocation] = useState<string>("");
   const map = useModel<MapState>(mapModel);
   useEffect(() => {
+    const ctx = Taro.createMapContext("myMap");
+    setMapCtx(ctx);
     mapModel.get();
   }, []);
 
@@ -53,7 +56,24 @@ const Map: React.FC<{ scrollIntoView: string }> = ({
       longitude: location?.lng,
       iconPath: "",
     }));
-  }, [scrollIntoView]);
+  }, [map, scrollIntoView]);
+
+  const center = useMemo<LocationCenter>(() => {
+    const {
+      center: [latitude, longitude],
+    } = map;
+    return {
+      latitude,
+      longitude,
+    };
+  }, [map]);
+
+  useEffect(() => {
+    if (mapCtx) {
+      console.log(center);
+      mapCtx?.moveToLocation(center);
+    }
+  }, [scrollIntoView, mapCtx, center]);
 
   return (
     <>
@@ -62,10 +82,12 @@ const Map: React.FC<{ scrollIntoView: string }> = ({
           width: "100%",
           height: "100%",
         }}
-        longitude={108.93}
-        latitude={34.27}
+        maxScale={20}
+        minScale={14}
+        longitude={center.longitude}
+        latitude={center.latitude}
         showLocation
-        scale={15}
+        scale={14}
         id="myMap"
         markers={markers}
         polygons={[
