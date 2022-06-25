@@ -42,7 +42,7 @@ export function markersFormat(values: LocationInfo[]): MapProps.marker[] {
       height: 39,
       customCallout: {
         display: "BYCLICK",
-        anchorY: 10,
+        anchorY: 39,
         anchorX: 0,
       },
       anchor: { x: 0, y: 1 },

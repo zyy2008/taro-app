@@ -27,7 +27,18 @@
 
 .callout {
   width: 100px;
-  height: 100px;
-  background: url("/assets/marker/base.png") no-repeat;
-  background-color: red;
+  height: 112px;
+  position: relative;
+  .img {
+    border-radius: 100%;
+    width: 80px;
+    height: 80px;
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    top: 10px;
+    margin: auto;
+    right: 0;
+    border: 1px solid red;
+  }
 }

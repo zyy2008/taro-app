@@ -16,6 +16,7 @@ import { mapModel, MapState } from "@/store/models/map";
 import { markersFilter, markersFormat } from "@/utils/marker";
 import "./index.scss";
 import base from "@/assets/marker/base.png";
+import img from "@/assets/1.jpg";
 
 const minScale: number = 14.5;
 
@@ -83,11 +84,20 @@ const Index: FC = () => {
               setScale(detail.scale);
             }
           }}
+          onMarkerTap={(res) => {
+            console.log(res);
+          }}
         >
           <CoverView slot="callout">
             {markers.map(({ id }) => (
-              <CoverView markerId={`${id}`} key={id} className="callout">
-                <CoverImage src={base} />
+              <CoverView
+                markerId={`${id}`}
+                a="123"
+                key={id}
+                className="callout"
+              >
+                <CoverImage src={base} className="background" />
+                <CoverImage src={img} className="img" />
               </CoverView>
             ))}
           </CoverView>
