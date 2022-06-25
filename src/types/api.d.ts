@@ -1,5 +1,6 @@
 type X = {
   type: number;
+  scale: number;
 };
 
 declare type LocationCenter = {
@@ -11,7 +12,7 @@ declare type LocationInfo = {
   adcode?: number;
   address?: string;
   city?: string;
-  create_time?: number;
+  create_time: number;
   district?: string;
   geometry_type?: number;
   id?: number;

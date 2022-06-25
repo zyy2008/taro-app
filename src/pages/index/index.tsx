@@ -1,91 +1,48 @@
-import React, { FC, useCallback, useMemo, useRef, useEffect } from "react";
+import React, {
+  FC,
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useState,
+} from "react";
 import { Flex, Button } from "@taroify/core";
 import { Header } from "./components";
 import { Map, MapHandle } from "@/components/index";
-import { MapProps, Text, CoverView } from "@tarojs/components";
+import { MapProps, Text, CoverView, CoverImage } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useModel } from "foca";
 import { mapModel, MapState } from "@/store/models/map";
+import { markersFilter, markersFormat } from "@/utils/marker";
 import "./index.scss";
-import jzw from "@/assets/marker/jzw.png";
-import ljt from "@/assets/marker/ljt.png";
-import fwd from "@/assets/marker/fwd.png";
+import base from "@/assets/marker/base.png";
+
+const minScale: number = 14.5;
 
 const Index: FC = () => {
   const mapRef = useRef<MapHandle>(null);
-  const [scrollIntoView, setScrollIntoView] =
-    React.useState<string>("building");
-  const map = useModel<MapState>(mapModel);
+  const [scale, setScale] = useState<number>(minScale);
+  const [scrollIntoView, setScrollIntoView] = useState<string>("building");
+  const mapState = useModel<MapState>(mapModel);
   const useScrollIntoView = useCallback((val) => {
     setScrollIntoView(val);
   }, []);
 
-  const markers = useMemo<Omit<MapProps.marker, "label">[]>(() => {
-    const values = map?.[scrollIntoView] as LocationInfo[];
-    return values.map(({ title, location, x, create_time }) => ({
-      title,
-      id: create_time,
-      latitude: location?.lat,
-      longitude: location?.lng,
-      // joinCluster: true,
-      iconPath: (() => {
-        switch (x.type) {
-          case 1:
-            return jzw;
-          case 2:
-            return ljt;
-          default:
-            return fwd;
-        }
-      })(),
-      width: 33,
-      height: 39,
-      customCallout: {
-        display: "BYCLICK",
-        anchorY: 10,
-        anchorX: 0,
-      },
-      ariaLabel: "0000",
-      anchor: { x: 0, y: 1 },
-      label: {
-        fontSize: 12,
-        padding: 5,
-        content: title,
-        color: "#fff",
-        bgColor: "#00000070",
-        borderRadius: 2,
-        textAlign: "center",
-        anchorX: (() => {
-          switch (title.length) {
-            case 1:
-              return -2;
-            case 2:
-              break;
-            case 3:
-              return -6;
-            case 4:
-              return -12;
-            case 5:
-              break;
-            case 6:
-              return -26;
-            default:
-              break;
-          }
-          return 0;
-        })(),
-      },
-    }));
-  }, [map, scrollIntoView]);
+  const markers = useMemo<MapProps.marker[]>(() => {
+    const values = mapState?.[scrollIntoView] as LocationInfo[];
+    const filters = markersFilter(values, { scale, minScale });
+    return markersFormat(filters);
+  }, [mapState, scrollIntoView, scale]);
+
   const center = useMemo<LocationCenter>(() => {
     const {
       center: [latitude, longitude],
-    } = map;
+    } = mapState;
     return {
       latitude,
       longitude,
     };
-  }, [map]);
+  }, [mapState]);
   useEffect(() => {
     if (mapRef) {
       mapRef.current?.mapCtx?.moveToLocation(center);
@@ -114,15 +71,23 @@ const Index: FC = () => {
       >
         <Map
           ref={mapRef}
+          scale={minScale}
+          minScale={minScale}
+          maxScale={20}
           scrollIntoView={scrollIntoView}
           longitude={center.longitude}
           latitude={center.latitude}
           markers={markers}
+          onRegionChange={({ detail, causedBy, type }: any) => {
+            if (type === "end" && causedBy === "scale") {
+              setScale(detail.scale);
+            }
+          }}
         >
           <CoverView slot="callout">
             {markers.map(({ id }) => (
-              <CoverView markerId={`${id}`} key={id}>
-                123
+              <CoverView markerId={`${id}`} key={id} className="callout">
+                <CoverImage src={base} />
               </CoverView>
             ))}
           </CoverView>

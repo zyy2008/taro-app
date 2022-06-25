@@ -24,7 +24,8 @@
       "@/components/*": ["src/components/*"],
       "@/assets/*": ["src/assets/*"],
       "@/labs/*": ["src/labs/*"],
-      "@/api/*": ["src/api/*"]
+      "@/api/*": ["src/api/*"],
+      "@/utils/*": ["src/utils/*"]
     }
   },
   "include": ["./src", "global.d.ts"],

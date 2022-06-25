@@ -19,6 +19,7 @@ const config = {
     "@/labs": path.resolve(__dirname, "..", "src/labs"),
     "@/api": path.resolve(__dirname, "..", "src/api"),
     "@/store": path.resolve(__dirname, "..", "src/store"),
+    "@/utils": path.resolve(__dirname, "..", "src/utils"),
   },
   copy: {
     patterns: [],
