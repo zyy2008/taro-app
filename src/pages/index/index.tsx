@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { Flex, Button } from "@taroify/core";
-import { Header } from "./components";
+import { Header, MarkerInfo } from "./components";
 import { Map, MapHandle } from "@/components/index";
 import { MapProps, Text, CoverView, CoverImage } from "@tarojs/components";
 import Taro from "@tarojs/taro";
@@ -24,6 +24,7 @@ const Index: FC = () => {
   const mapRef = useRef<MapHandle>(null);
   const [scale, setScale] = useState<number>(minScale);
   const [scrollIntoView, setScrollIntoView] = useState<string>("building");
+  const [markerId, setMarkerId] = useState<number | undefined>(123);
   const mapState = useModel<MapState>(mapModel);
   const useScrollIntoView = useCallback((val) => {
     setScrollIntoView(val);
@@ -84,17 +85,23 @@ const Index: FC = () => {
               setScale(detail.scale);
             }
           }}
-          onMarkerTap={(res) => {
-            console.log(res);
+          onCalloutTap={({ detail: { markerId } }) => {
+            console.log(markerId);
+            setMarkerId(markerId as number);
+          }}
+          onTap={() => {
+            setMarkerId(undefined);
           }}
         >
           <CoverView slot="callout">
             {markers.map(({ id }) => (
               <CoverView
                 markerId={`${id}`}
-                a="123"
                 key={id}
                 className="callout"
+                style={{
+                  display: markerId === id ? "block" : "none",
+                }}
               >
                 <CoverImage src={base} className="background" />
                 <CoverImage src={img} className="img" />
@@ -113,6 +120,7 @@ const Index: FC = () => {
         >
           <Text className="text">游览线路</Text>
         </Button>
+        {markerId && <MarkerInfo />}
       </Flex.Item>
     </Flex>
   );

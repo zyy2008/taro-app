@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useImperativeHandle } from "react";
-import { Map as BaseMap, MapProps } from "@tarojs/components";
+import { Map as BaseMap, MapProps, BaseEventOrig } from "@tarojs/components";
 import { Toast, Button } from "@taroify/core";
 import Taro, { MapContext } from "@tarojs/taro";
 import "./index.scss";
@@ -11,13 +11,6 @@ import { Aim } from "@taroify/icons";
 export type MapHandle = {
   mapCtx: MapContext;
 };
-
-const points: [number, number][] = [
-  [34.303643, 108.955564],
-  [34.304005, 108.969784],
-  [34.281131, 108.971219],
-  [34.280648, 108.956501],
-];
 
 const apiContain = async (location: string) => {
   const { data } = await contain({
@@ -59,6 +52,19 @@ const Map: React.FC<
         }}
         showLocation
         id="myMap"
+        onMarkerTap={(res: BaseEventOrig<MapProps.onMarkerTapEventDetail>) => {
+          const {
+            detail: { markerId },
+          } = res;
+          const { markers } = others;
+          const [{ latitude, longitude }] =
+            markers?.filter(({ id }) => id === markerId) ?? [];
+          mapCtx?.moveToLocation({
+            latitude,
+            longitude,
+          });
+          others?.onCalloutTap?.(res);
+        }}
         // polygons={[
         //   {
         //     points: points.map(([latitude, longitude]) => ({
