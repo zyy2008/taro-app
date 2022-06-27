@@ -1,9 +1,72 @@
 .card {
   position: absolute;
   z-index: 999;
-  bottom: 40px;
+  bottom: 50px;
   left: 20px;
   right: 20px;
-  border: 5px solid #000;
-  border-radius: 10px;
+  .taroify-grid-item__content {
+    padding: 20px 0;
+  }
+  .taroify-cell__value {
+    flex: none;
+  }
+  .taroify-cell {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-top: 1px solid #ebedf0;
+    border-left: 1px solid #ebedf0;
+    border-right: 1px solid #ebedf0;
+  }
+  .taroify-grid-item {
+    &:first-child {
+      .taroify-grid-item__content {
+        border-bottom-left-radius: 10px;
+      }
+    }
+    &:last-child {
+      .taroify-grid-item__content {
+        border-bottom-right-radius: 10px;
+      }
+    }
+  }
+}
+
+.play {
+  position: absolute;
+  display: inline-flex;
+  flex-direction: column;
+  right: 50px;
+  z-index: 99;
+  top: 0;
+  margin: auto;
+  bottom: 0;
+  height: 140px;
+  justify-content: space-between;
+  .time {
+    font-size: 26px;
+    text-align: center;
+  }
+}
+
+.info {
+  position: relative;
+}
+
+.info-view {
+  display: flex;
+  width: calc(100% - 150px);
+  flex-direction: column;
+  .title {
+    font-weight: bold;
+  }
+  .distance,
+  .des {
+    font-size: 25px;
+  }
+  .des {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
 }
