@@ -1,0 +1,13 @@
+.bar {
+  position: absolute;
+  top: 0;
+  padding-left: 15px;
+  padding-right: 15px;
+  .text {
+    padding-left: 20px;
+  }
+  .taroify-cell__value {
+    display: flex;
+    align-items: center;
+  }
+}

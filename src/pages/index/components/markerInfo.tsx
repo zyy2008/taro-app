@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { View, Text } from "@tarojs/components";
 import { Cell, Grid } from "@taroify/core";
 import "./markerInfo.scss";
@@ -9,113 +9,109 @@ import {
   PlayCircle,
   PauseCircle,
 } from "@taroify/icons";
-import Taro, { InnerAudioContext, BackgroundAudioManager } from "@tarojs/taro";
+import Taro, { BackgroundAudioManager } from "@tarojs/taro";
 import dayjs from "dayjs";
+import PlayBar from "./playBar";
 
-const MarkerInfo: React.FC = () => {
-  const [audioCtx, setAudioCtx] = useState<InnerAudioContext>();
+const src = "https://storage.360buyimg.com/jdrd-blog/27.mp3";
+
+const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
   const [play, setPlay] = useState<boolean>(false);
-  const [duration, setDuration] = useState<string>();
+  const [duration, setDuration] = useState<string>("02:46");
   const [backgroundCtx, setBackgroundCtx] = useState<BackgroundAudioManager>();
+  const [visible, setVisible] = useState<boolean>(true);
+
+  const useVisible = useCallback((val: boolean) => {
+    setVisible(val);
+  }, []);
 
   useEffect(() => {
-    const src = "https://storage.360buyimg.com/jdrd-blog/27.mp3";
-    const ctx = Taro.createInnerAudioContext();
     const bgCtx = Taro.getBackgroundAudioManager();
-    ctx.autoplay = false;
-    ctx.src = src;
-    bgCtx.src = src;
-    bgCtx.title = "此时此刻";
-    bgCtx.epname = "此时此刻";
-    bgCtx.singer = "许巍";
-    bgCtx.coverImgUrl =
-      "https://y.gtimg.cn/music/photo_new/T002R300x300M000003rsKF44GyaSk.jpg?max_age=2592000";
-    setAudioCtx(ctx);
-    setBackgroundCtx(bgCtx);
-    return () => {
-      if (ctx) {
-        ctx.destroy();
-      }
-    };
-  }, []);
-  useEffect(() => {
-    if (audioCtx) {
-      audioCtx.onCanplay(() => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        audioCtx.duration;
-        // 必须。不然也获取不到时长
-        setTimeout(() => {
-          const time = dayjs(audioCtx.duration * 1000).format("mm:ss");
-          setDuration(time);
-        }, 0);
-      });
-      audioCtx.onTimeUpdate(() => {
-        const time = audioCtx.duration - audioCtx.currentTime;
-        setDuration(dayjs(time * 1000).format("mm:ss"));
-      });
-      audioCtx.onPlay(() => {
-        setPlay(!audioCtx.paused);
-      });
-      audioCtx.onPause(() => {
-        setPlay(!audioCtx.paused);
-      });
-      audioCtx.onStop(() => {
-        const time = dayjs(audioCtx.duration * 1000).format("mm:ss");
-        setDuration(time);
-      });
+    if (typeof bgCtx.paused === "boolean") {
+      setPlay(!bgCtx.paused);
     }
-    return () => {
-      if (audioCtx) {
-        audioCtx.offCanplay();
-        audioCtx.offTimeUpdate();
-        audioCtx.offPlay();
-        audioCtx.offPause();
+    bgCtx.onCanplay(() => {
+      if (bgCtx.duration && bgCtx.currentTime) {
+        const time = bgCtx.duration - bgCtx.currentTime;
+        setDuration(dayjs(time * 1000).format("mm:ss"));
       }
-    };
-  }, [audioCtx]);
+    });
+    bgCtx.onTimeUpdate(() => {
+      if (!bgCtx.paused) {
+        const time = bgCtx.duration - bgCtx.currentTime;
+        setDuration(dayjs(time * 1000).format("mm:ss"));
+      }
+    });
+    bgCtx.onPlay(() => {
+      setPlay(!bgCtx.paused);
+    });
+    bgCtx.onPause(() => {
+      setPlay(!bgCtx.paused);
+    });
+    bgCtx.onStop(() => {
+      setDuration("02:46");
+      setPlay(false);
+    });
+    setBackgroundCtx(bgCtx);
+  }, []);
 
   return (
-    <View className="card">
-      <View className="info">
-        <Cell
-          clickable
-          title={
-            <View className="info-view">
-              <Text className="title">一号坑</Text>
-              <Text className="distance">距你45公里</Text>
-              <Text className="des">一号兵马俑坑是1974一</Text>
+    <>
+      {!visible && <PlayBar play={play} setVisible={useVisible} />}
+      {marker && (
+        <View className="card">
+          <View className="info">
+            <Cell
+              clickable
+              title={
+                <View className="info-view">
+                  <Text className="title">一号坑</Text>
+                  <Text className="distance">距你45公里</Text>
+                  <Text className="des">一号兵马俑坑是1974一</Text>
+                </View>
+              }
+              className="text"
+            />
+            <View className="play">
+              {play ? (
+                <PauseCircle
+                  size={46}
+                  onClick={() => {
+                    backgroundCtx?.pause();
+                  }}
+                />
+              ) : (
+                <PlayCircle
+                  size={46}
+                  onClick={() => {
+                    if (backgroundCtx) {
+                      if (
+                        backgroundCtx.src === src &&
+                        backgroundCtx.title === "123"
+                      ) {
+                        backgroundCtx?.play();
+                      } else {
+                        backgroundCtx.src = src;
+                        backgroundCtx.title = "123";
+                      }
+                      setVisible(false);
+                    }
+                  }}
+                />
+              )}
+
+              <Text className="time">{duration}</Text>
             </View>
-          }
-          className="text"
-        />
-        <View className="play">
-          {play ? (
-            <PauseCircle
-              size={46}
-              onClick={() => {
-                audioCtx?.pause();
-              }}
-            />
-          ) : (
-            <PlayCircle
-              size={46}
-              onClick={() => {
-                audioCtx?.play();
-                backgroundCtx?.play();
-              }}
-            />
-          )}
+          </View>
 
-          <Text className="time">{duration}</Text>
+          <Grid columns={3} direction="horizontal" clickable bordered={false}>
+            <Grid.Item icon={<ShareOutlined size={20} />} text="分享" />
+            <Grid.Item icon={<StarOutlined size={20} />} text="收藏" />
+            <Grid.Item icon={<GuideOutlined size={20} />} text="前往" />
+          </Grid>
         </View>
-      </View>
-
-      <Grid columns={3} direction="horizontal" clickable bordered={false}>
-        <Grid.Item icon={<ShareOutlined size={20} />} text="分享" />
-        <Grid.Item icon={<StarOutlined size={20} />} text="收藏" />
-        <Grid.Item icon={<GuideOutlined size={20} />} text="前往" />
-      </Grid>
-    </View>
+      )}
+    </>
   );
 };
 

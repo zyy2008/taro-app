@@ -16,7 +16,6 @@ export function markersFilter(
 ): LocationInfo[] {
   return (
     values.filter(({ x }) => {
-      console.log(scale - minScale);
       return Math.round(scale - minScale + 1) >= x.scale;
     }) ?? []
   );

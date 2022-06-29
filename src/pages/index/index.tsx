@@ -24,7 +24,7 @@ const Index: FC = () => {
   const mapRef = useRef<MapHandle>(null);
   const [scale, setScale] = useState<number>(minScale);
   const [scrollIntoView, setScrollIntoView] = useState<string>("building");
-  const [markerId, setMarkerId] = useState<number | undefined>(123);
+  const [markerId, setMarkerId] = useState<number>();
   const mapState = useModel<MapState>(mapModel);
   const useScrollIntoView = useCallback((val) => {
     setScrollIntoView(val);
@@ -50,6 +50,17 @@ const Index: FC = () => {
       mapRef.current?.mapCtx?.moveToLocation(center);
     }
   }, [scrollIntoView, mapRef, center]);
+
+  const marker = useMemo<LocationInfo | null>(() => {
+    if (markerId && scrollIntoView) {
+      const values = mapState?.[scrollIntoView] as LocationInfo[];
+      const [item] = values.filter(
+        ({ create_time }) => create_time === markerId
+      );
+      return item;
+    }
+    return null;
+  }, [mapState, markerId, scrollIntoView]);
 
   return (
     <Flex direction="column" className="home">
@@ -120,7 +131,7 @@ const Index: FC = () => {
         >
           <Text className="text">游览线路</Text>
         </Button>
-        {markerId && <MarkerInfo />}
+        <MarkerInfo marker={marker} />
       </Flex.Item>
     </Flex>
   );
