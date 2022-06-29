@@ -1,17 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { View, Text } from "@tarojs/components";
-import { Cell, Grid } from "@taroify/core";
+import { Cell } from "@taroify/core";
 import "./markerInfo.scss";
-import {
-  ShareOutlined,
-  StarOutlined,
-  GuideOutlined,
-  PlayCircle,
-  PauseCircle,
-} from "@taroify/icons";
+import { PlayCircle, PauseCircle } from "@taroify/icons";
 import Taro, { BackgroundAudioManager } from "@tarojs/taro";
 import dayjs from "dayjs";
 import PlayBar from "./playBar";
+import { ShareBar } from "@/components/index";
 
 const src = "https://storage.360buyimg.com/jdrd-blog/27.mp3";
 
@@ -73,6 +68,11 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
                 </View>
               }
               className="text"
+              onClick={() => {
+                Taro.navigateTo({
+                  url: `/pages/detail/index?id=${marker.create_time}`,
+                });
+              }}
             />
             <View className="play">
               {play ? (
@@ -106,11 +106,7 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
             </View>
           </View>
 
-          <Grid columns={3} direction="horizontal" clickable bordered={false}>
-            <Grid.Item icon={<ShareOutlined size={20} />} text="分享" />
-            <Grid.Item icon={<StarOutlined size={20} />} text="收藏" />
-            <Grid.Item icon={<GuideOutlined size={20} />} text="前往" />
-          </Grid>
+          <ShareBar />
         </View>
       )}
     </>
