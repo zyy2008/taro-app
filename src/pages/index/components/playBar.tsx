@@ -4,17 +4,28 @@ import { Cross, Play, Pause } from "@taroify/icons";
 import { Text } from "@tarojs/components";
 import Taro, { BackgroundAudioManager } from "@tarojs/taro";
 import "./playBar.scss";
+import { useModel } from "foca";
+import { audioModel, AudioState } from "@/store/models/audio";
 
 const PlayBar: React.FC<{
-  play?: boolean;
   setVisible?: (T: boolean) => void;
   marker?: LocationInfo | null;
-}> = ({ play, setVisible, marker }) => {
-  const [backgroundCtx, setBackgroundCtx] = useState<BackgroundAudioManager>();
+}> = ({ setVisible, marker }) => {
+  const [bgCtx, setBgCtx] = useState<BackgroundAudioManager>();
+  const mapState = useModel<AudioState>(audioModel);
+  const [title, setTitle] = useState<string>();
+
   useEffect(() => {
     const bgCtx = Taro.getBackgroundAudioManager();
-    setBackgroundCtx(bgCtx);
+    setBgCtx(bgCtx);
   }, []);
+
+  useEffect(() => {
+    if (marker) {
+      setTitle(marker.title);
+    }
+  }, [marker]);
+
   return (
     <Cell
       className="bar"
@@ -22,27 +33,27 @@ const PlayBar: React.FC<{
         <Cross
           onClick={() => {
             setVisible?.(true);
-            backgroundCtx?.stop();
+            bgCtx?.stop();
           }}
         />
       }
     >
-      {play ? (
+      {mapState.play ? (
         <Pause
           size={20}
           onClick={() => {
-            backgroundCtx?.pause();
+            bgCtx?.pause();
           }}
         />
       ) : (
         <Play
           size={20}
           onClick={() => {
-            backgroundCtx?.play();
+            bgCtx?.play();
           }}
         />
       )}
-      <Text className="text">正在播放{marker?.title}简介</Text>
+      <Text className="text">正在播放{bgCtx?.epname}简介</Text>
     </Cell>
   );
 };

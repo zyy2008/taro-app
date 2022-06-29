@@ -23,7 +23,7 @@ store.init({
   persist: [
     {
       version: "1",
-      key: `foca-taro-demo-${process.env.NODE_ENV}`,
+      key: `foca-taro`,
       engine: taroStorage,
       models: [mapModel, audioModel],
     },

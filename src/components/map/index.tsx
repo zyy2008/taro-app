@@ -3,7 +3,7 @@ import { Map as BaseMap, MapProps, BaseEventOrig } from "@tarojs/components";
 import { Toast, Button } from "@taroify/core";
 import Taro, { MapContext } from "@tarojs/taro";
 import "./index.scss";
-import QQMapWX from "@/labs/qqmap-wx-jssdk.min.js";
+// import QQMapWX from "@/labs/qqmap-wx-jssdk.min.js";
 import { contain } from "@/api/map";
 import { mapModel } from "@/store/models/map";
 import { Aim } from "@taroify/icons";

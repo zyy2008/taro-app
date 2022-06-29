@@ -1,7 +1,7 @@
 import "@/store";
 import { Component } from "react";
 import Taro from "@tarojs/taro";
-import { FocaProvider } from "foca";
+import { FocaProvider, store } from "foca";
 import { audioModel } from "@/store/models/audio";
 import "./app.scss";
 
@@ -24,6 +24,13 @@ class App extends Component {
           return res;
         });
     };
+    Taro.clearStorage({
+      success: () => {
+        console.log("123");
+      },
+    });
+    // Taro.createContext()
+    // store.refresh(true);
     Taro.addInterceptor(interceptor);
     audioModel.createAudioManager();
   }

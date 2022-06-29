@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { View, Text } from "@tarojs/components";
 import { Cell } from "@taroify/core";
 import "./markerInfo.scss";
@@ -13,9 +13,7 @@ import { audioModel, AudioState } from "@/store/models/audio";
 const src = "https://storage.360buyimg.com/jdrd-blog/27.mp3";
 
 const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
-  const [play, setPlay] = useState<boolean>(false);
-  const [duration, setDuration] = useState<string>("02:46");
-  const [backgroundCtx, setBackgroundCtx] = useState<BackgroundAudioManager>();
+  const [bgCtx, setBgCtx] = useState<BackgroundAudioManager>();
   const [visible, setVisible] = useState<boolean>(true);
   const mapState = useModel<AudioState>(audioModel);
 
@@ -25,14 +23,20 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
 
   useEffect(() => {
     const bgCtx = Taro.getBackgroundAudioManager();
-    setBackgroundCtx(bgCtx);
+    setBgCtx(bgCtx);
   }, []);
+
+  const time = useMemo<string>(() => {
+    if (bgCtx && mapState.currentTime) {
+      const time = bgCtx.duration - mapState.currentTime;
+      return dayjs(time * 1000).format("mm:ss");
+    }
+    return "00:00";
+  }, [mapState.currentTime, bgCtx]);
 
   return (
     <>
-      {!visible && (
-        <PlayBar play={play} setVisible={useVisible} marker={marker} />
-      )}
+      {!visible && <PlayBar setVisible={useVisible} marker={marker} />}
       {marker && (
         <View className="card">
           <View className="info">
@@ -53,26 +57,24 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
               }}
             />
             <View className="play">
-              {play ? (
+              {mapState.play ? (
                 <PauseCircle
                   size={46}
                   onClick={() => {
-                    backgroundCtx?.pause();
+                    bgCtx?.pause();
                   }}
                 />
               ) : (
                 <PlayCircle
                   size={46}
                   onClick={() => {
-                    if (backgroundCtx) {
-                      if (
-                        backgroundCtx.src === src &&
-                        backgroundCtx.title === "123"
-                      ) {
-                        backgroundCtx?.play();
+                    if (bgCtx) {
+                      if (bgCtx.src === src && bgCtx.title === "123") {
+                        bgCtx?.play();
                       } else {
-                        backgroundCtx.src = src;
-                        backgroundCtx.title = "123";
+                        bgCtx.src = src;
+                        bgCtx.title = "123";
+                        bgCtx.epname = "1233333";
                       }
                       setVisible(false);
                     }
@@ -80,7 +82,7 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
                 />
               )}
 
-              <Text className="time">{duration}</Text>
+              <Text className="time">{time}</Text>
             </View>
           </View>
 

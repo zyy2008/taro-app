@@ -29,6 +29,7 @@ export const audioModel = defineModel("audio", {
   effects: {
     createAudioManager() {
       const bgCtx = Taro.getBackgroundAudioManager();
+      this.setPlay(false);
       bgCtx.onTimeUpdate(() => {
         if (!bgCtx.paused) {
           this.setDuration(bgCtx.duration);
@@ -46,7 +47,7 @@ export const audioModel = defineModel("audio", {
 
       bgCtx.onStop(() => {
         this.setDuration(bgCtx.duration);
-        this.setCurrentTime(bgCtx.currentTime);
+        this.setCurrentTime(0);
         this.setPlay(false);
       });
     },
