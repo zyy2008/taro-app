@@ -7,6 +7,8 @@ import Taro, { BackgroundAudioManager } from "@tarojs/taro";
 import dayjs from "dayjs";
 import PlayBar from "./playBar";
 import { ShareBar } from "@/components/index";
+import { useModel } from "foca";
+import { audioModel, AudioState } from "@/store/models/audio";
 
 const src = "https://storage.360buyimg.com/jdrd-blog/27.mp3";
 
@@ -15,6 +17,7 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
   const [duration, setDuration] = useState<string>("02:46");
   const [backgroundCtx, setBackgroundCtx] = useState<BackgroundAudioManager>();
   const [visible, setVisible] = useState<boolean>(true);
+  const mapState = useModel<AudioState>(audioModel);
 
   const useVisible = useCallback((val: boolean) => {
     setVisible(val);
@@ -22,31 +25,6 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
 
   useEffect(() => {
     const bgCtx = Taro.getBackgroundAudioManager();
-    if (typeof bgCtx.paused === "boolean") {
-      setPlay(!bgCtx.paused);
-    }
-    bgCtx.onCanplay(() => {
-      if (bgCtx.duration && bgCtx.currentTime) {
-        const time = bgCtx.duration - bgCtx.currentTime;
-        setDuration(dayjs(time * 1000).format("mm:ss"));
-      }
-    });
-    bgCtx.onTimeUpdate(() => {
-      if (!bgCtx.paused) {
-        const time = bgCtx.duration - bgCtx.currentTime;
-        setDuration(dayjs(time * 1000).format("mm:ss"));
-      }
-    });
-    bgCtx.onPlay(() => {
-      setPlay(!bgCtx.paused);
-    });
-    bgCtx.onPause(() => {
-      setPlay(!bgCtx.paused);
-    });
-    bgCtx.onStop(() => {
-      setDuration("02:46");
-      setPlay(false);
-    });
     setBackgroundCtx(bgCtx);
   }, []);
 

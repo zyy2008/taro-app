@@ -2,6 +2,7 @@ import "@/store";
 import { Component } from "react";
 import Taro from "@tarojs/taro";
 import { FocaProvider } from "foca";
+import { audioModel } from "@/store/models/audio";
 import "./app.scss";
 
 class App extends Component {
@@ -24,6 +25,7 @@ class App extends Component {
         });
     };
     Taro.addInterceptor(interceptor);
+    audioModel.createAudioManager();
   }
 
   componentDidShow() {}

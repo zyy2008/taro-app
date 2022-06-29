@@ -1,0 +1,22 @@
+.audio {
+  background-color: rgba(0, 0, 0, 0.1);
+  .taroify-cell__value {
+    flex: none;
+  }
+}
+
+.slider {
+  padding: 0 20px;
+  .taroify-cell {
+    background-color: transparent;
+    padding: 0;
+    padding-bottom: 30px;
+  }
+  .taroify-slider__thumb {
+    width: 40px;
+    height: 40px;
+  }
+  .taroify-slider {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}

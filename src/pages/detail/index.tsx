@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Cell, Grid, FixedView, Image, Empty } from "@taroify/core";
+import { Cell, FixedView, Image, Empty } from "@taroify/core";
 import { View, Text } from "@tarojs/components";
 import "./index.scss";
-import { ShareBar } from "@/components/index";
+import { ShareBar, Audio } from "@/components/index";
 import { useRouter } from "@tarojs/taro";
 import { useModel } from "foca";
 import { mapModel, MapState } from "@/store/models/map";
@@ -41,6 +41,7 @@ const Detail: React.FC = () => {
         />
       </View>
       <View className="content">
+        <Audio />
         {info?.x?.des ? (
           <Text className="text">{info?.x?.des}</Text>
         ) : (

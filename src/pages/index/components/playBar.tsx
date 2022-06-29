@@ -11,7 +11,6 @@ const PlayBar: React.FC<{
   marker?: LocationInfo | null;
 }> = ({ play, setVisible, marker }) => {
   const [backgroundCtx, setBackgroundCtx] = useState<BackgroundAudioManager>();
-
   useEffect(() => {
     const bgCtx = Taro.getBackgroundAudioManager();
     setBackgroundCtx(bgCtx);
