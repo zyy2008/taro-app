@@ -1,6 +1,7 @@
 type X = {
   type: number;
   scale: number;
+  des: string;
 };
 
 declare type LocationCenter = {

@@ -38,9 +38,13 @@ const Map: React.FC<
     mapModel.get();
   }, []);
 
-  useImperativeHandle<MapHandle, any>(ref, () => ({
-    mapCtx,
-  }));
+  useImperativeHandle<MapHandle, any>(
+    ref,
+    () => ({
+      mapCtx,
+    }),
+    [mapCtx]
+  );
 
   return (
     <>
@@ -52,30 +56,6 @@ const Map: React.FC<
         }}
         showLocation
         id="myMap"
-        onMarkerTap={(res: BaseEventOrig<MapProps.onMarkerTapEventDetail>) => {
-          const {
-            detail: { markerId },
-          } = res;
-          const { markers } = others;
-          const [{ latitude, longitude }] =
-            markers?.filter(({ id }) => id === markerId) ?? [];
-          mapCtx?.moveToLocation({
-            latitude,
-            longitude,
-          });
-          others?.onCalloutTap?.(res);
-        }}
-        // polygons={[
-        //   {
-        //     points: points.map(([latitude, longitude]) => ({
-        //       latitude,
-        //       longitude,
-        //     })),
-        //     strokeWidth: 1,
-        //     strokeColor: "#000",
-        //     fillColor: "#A25E6B",
-        //   },
-        // ]}
       >
         {children}
       </BaseMap>

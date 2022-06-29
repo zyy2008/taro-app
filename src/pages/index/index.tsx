@@ -1,5 +1,4 @@
 import React, {
-  FC,
   useCallback,
   useMemo,
   useRef,
@@ -9,7 +8,13 @@ import React, {
 import { Flex, Button } from "@taroify/core";
 import { Header, MarkerInfo } from "./components";
 import { Map, MapHandle } from "@/components/index";
-import { MapProps, Text, CoverView, CoverImage } from "@tarojs/components";
+import {
+  MapProps,
+  Text,
+  CoverView,
+  CoverImage,
+  BaseEventOrig,
+} from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useModel } from "foca";
 import { mapModel, MapState } from "@/store/models/map";
@@ -20,11 +25,15 @@ import img from "@/assets/1.jpg";
 
 const minScale: number = 14.5;
 
-const Index: FC = () => {
+const Index: React.FC = () => {
   const mapRef = useRef<MapHandle>(null);
   const [scale, setScale] = useState<number>(minScale);
   const [scrollIntoView, setScrollIntoView] = useState<string>("building");
-  const [markerId, setMarkerId] = useState<number>();
+  const [marker, setMarker] = useState<MapProps.marker>();
+  const [center, setCenter] = useState<LocationCenter>({
+    longitude: 0,
+    latitude: 0,
+  });
   const mapState = useModel<MapState>(mapModel);
   const useScrollIntoView = useCallback((val) => {
     setScrollIntoView(val);
@@ -36,31 +45,29 @@ const Index: FC = () => {
     return markersFormat(filters);
   }, [mapState, scrollIntoView, scale]);
 
-  const center = useMemo<LocationCenter>(() => {
-    const {
-      center: [latitude, longitude],
-    } = mapState;
-    return {
-      latitude,
-      longitude,
-    };
-  }, [mapState]);
   useEffect(() => {
-    if (mapRef) {
-      mapRef.current?.mapCtx?.moveToLocation(center);
+    if (mapRef.current && mapState?.center && scrollIntoView) {
+      const {
+        center: [latitude, longitude],
+      } = mapState;
+      setScale(minScale);
+      setCenter({
+        latitude,
+        longitude,
+      });
     }
-  }, [scrollIntoView, mapRef, center]);
+  }, [scrollIntoView, mapState, mapRef]);
 
-  const marker = useMemo<LocationInfo | null>(() => {
-    if (markerId && scrollIntoView) {
+  const markerInfo = useMemo<LocationInfo | null>(() => {
+    if (marker && scrollIntoView) {
       const values = mapState?.[scrollIntoView] as LocationInfo[];
       const [item] = values.filter(
-        ({ create_time }) => create_time === markerId
+        ({ create_time }) => create_time === marker.id
       );
       return item;
     }
     return null;
-  }, [mapState, markerId, scrollIntoView]);
+  }, [mapState, marker, scrollIntoView]);
 
   return (
     <Flex direction="column" className="home">
@@ -84,7 +91,7 @@ const Index: FC = () => {
       >
         <Map
           ref={mapRef}
-          scale={minScale}
+          scale={scale}
           minScale={minScale}
           maxScale={20}
           scrollIntoView={scrollIntoView}
@@ -92,16 +99,29 @@ const Index: FC = () => {
           latitude={center.latitude}
           markers={markers}
           onRegionChange={({ detail, causedBy, type }: any) => {
-            if (type === "end" && causedBy === "scale") {
-              setScale(detail.scale);
+            if (type === "end") {
+              if (causedBy === "drag" || causedBy === "scale") {
+                setScale(detail.scale);
+                setCenter(detail.centerLocation);
+              }
             }
           }}
-          onCalloutTap={({ detail: { markerId } }) => {
-            console.log(markerId);
-            setMarkerId(markerId as number);
+          onMarkerTap={(
+            res: BaseEventOrig<MapProps.onMarkerTapEventDetail>
+          ) => {
+            const {
+              detail: { markerId },
+            } = res;
+            const [item] = markers?.filter(({ id }) => id === markerId) ?? [];
+            const { latitude, longitude } = item;
+            setMarker(item);
+            setCenter({
+              latitude,
+              longitude,
+            });
           }}
           onTap={() => {
-            setMarkerId(undefined);
+            setMarker(undefined);
           }}
         >
           <CoverView slot="callout">
@@ -111,7 +131,7 @@ const Index: FC = () => {
                 key={id}
                 className="callout"
                 style={{
-                  display: markerId === id ? "block" : "none",
+                  display: marker?.id === id ? "block" : "none",
                 }}
               >
                 <CoverImage src={base} className="background" />
@@ -131,7 +151,7 @@ const Index: FC = () => {
         >
           <Text className="text">游览线路</Text>
         </Button>
-        <MarkerInfo marker={marker} />
+        <MarkerInfo marker={markerInfo} />
       </Flex.Item>
     </Flex>
   );

@@ -8,7 +8,8 @@ import "./playBar.scss";
 const PlayBar: React.FC<{
   play?: boolean;
   setVisible?: (T: boolean) => void;
-}> = ({ play, setVisible }) => {
+  marker?: LocationInfo | null;
+}> = ({ play, setVisible, marker }) => {
   const [backgroundCtx, setBackgroundCtx] = useState<BackgroundAudioManager>();
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const PlayBar: React.FC<{
           }}
         />
       )}
-      <Text className="text">正在播放一号坑简介</Text>
+      <Text className="text">正在播放{marker?.title}简介</Text>
     </Cell>
   );
 };

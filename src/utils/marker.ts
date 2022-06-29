@@ -37,11 +37,11 @@ export function markersFormat(values: LocationInfo[]): MapProps.marker[] {
             return fwd;
         }
       })(),
-      width: 33,
-      height: 39,
+      width: 35,
+      height: 41,
       customCallout: {
         display: "ALWAYS",
-        anchorY: 39,
+        anchorY: 41,
         anchorX: 0,
       },
       anchor: { x: 0, y: 1 },

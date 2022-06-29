@@ -57,7 +57,9 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
 
   return (
     <>
-      {!visible && <PlayBar play={play} setVisible={useVisible} />}
+      {!visible && (
+        <PlayBar play={play} setVisible={useVisible} marker={marker} />
+      )}
       {marker && (
         <View className="card">
           <View className="info">
@@ -65,9 +67,9 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
               clickable
               title={
                 <View className="info-view">
-                  <Text className="title">一号坑</Text>
+                  <Text className="title">{marker.title}</Text>
                   <Text className="distance">距你45公里</Text>
-                  <Text className="des">一号兵马俑坑是1974一</Text>
+                  <Text className="des">{marker.x.des}</Text>
                 </View>
               }
               className="text"

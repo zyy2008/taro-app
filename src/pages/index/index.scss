@@ -25,18 +25,14 @@
   }
 }
 
-.callout-view {
-  display: none;
-}
-
 .callout {
-  width: 100px;
-  height: 112px;
+  width: 105px;
+  height: 118px;
   position: relative;
   .img {
     border-radius: 100%;
-    width: 80px;
-    height: 80px;
+    width: 85px;
+    height: 85px;
     z-index: 1;
     position: absolute;
     left: 0;
