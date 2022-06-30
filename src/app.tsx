@@ -1,12 +1,55 @@
 import "@/store";
-import { Component } from "react";
-import Taro from "@tarojs/taro";
-import { FocaProvider, store } from "foca";
-import { audioModel } from "@/store/models/audio";
+import { FC, useEffect, useState } from "react";
+import Taro, { BackgroundAudioManager } from "@tarojs/taro";
+import { FocaProvider } from "foca";
 import "./app.scss";
+import { AudioContext } from "@/utils/context";
 
-class App extends Component {
-  componentDidMount() {
+const App: FC = ({ children }) => {
+  const [play, setPlay] = useState<boolean>(false);
+  const [duration, setDuration] = useState<number>(0);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [bgCtx, setBgCtx] = useState<BackgroundAudioManager>();
+
+  useEffect(() => {
+    const bgCtx = Taro.getBackgroundAudioManager();
+
+    if (typeof bgCtx.paused === "boolean") {
+      setPlay(!bgCtx.paused);
+    }
+
+    bgCtx.onTimeUpdate(() => {
+      if (!bgCtx.paused) {
+        setDuration(bgCtx.duration);
+        setCurrentTime(bgCtx.currentTime);
+      }
+    });
+
+    bgCtx.onCanplay(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      bgCtx.duration;
+      setTimeout(() => {
+        setDuration(bgCtx.duration);
+      }, 0);
+    });
+
+    bgCtx.onPlay(() => {
+      setPlay(!bgCtx.paused);
+    });
+
+    bgCtx.onPause(() => {
+      setPlay(!bgCtx.paused);
+    });
+
+    bgCtx.onStop(() => {
+      setDuration(bgCtx.duration);
+      setPlay(false);
+    });
+
+    setBgCtx(bgCtx);
+  }, []);
+
+  useEffect(() => {
     const interceptor = (chain) => {
       const requestParams = chain.requestParams;
       const { data, url } = requestParams;
@@ -24,27 +67,15 @@ class App extends Component {
           return res;
         });
     };
-    Taro.clearStorage({
-      success: () => {
-        console.log("123");
-      },
-    });
-    // Taro.createContext()
-    // store.refresh(true);
     Taro.addInterceptor(interceptor);
-    audioModel.createAudioManager();
-  }
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
-  componentDidCatchError() {}
-
-  // this.props.children 是将要会渲染的页面
-  render() {
-    return <FocaProvider>{this.props.children} </FocaProvider>;
-  }
-}
+  }, []);
+  return (
+    <FocaProvider>
+      <AudioContext.Provider value={{ play, duration, currentTime, bgCtx }}>
+        {children}
+      </AudioContext.Provider>
+    </FocaProvider>
+  );
+};
 
 export default App;

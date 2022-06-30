@@ -1,38 +1,31 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useContext } from "react";
 import { View, Text } from "@tarojs/components";
 import { Cell } from "@taroify/core";
 import "./markerInfo.scss";
 import { PlayCircle, PauseCircle } from "@taroify/icons";
-import Taro, { BackgroundAudioManager } from "@tarojs/taro";
+import Taro from "@tarojs/taro";
 import dayjs from "dayjs";
 import PlayBar from "./playBar";
 import { ShareBar } from "@/components/index";
-import { useModel } from "foca";
-import { audioModel, AudioState } from "@/store/models/audio";
+import { AudioContext } from "@/utils/context";
 
 const src = "https://storage.360buyimg.com/jdrd-blog/27.mp3";
 
 const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
-  const [bgCtx, setBgCtx] = useState<BackgroundAudioManager>();
   const [visible, setVisible] = useState<boolean>(true);
-  const mapState = useModel<AudioState>(audioModel);
+  const { play, bgCtx, currentTime, duration } = useContext(AudioContext);
 
   const useVisible = useCallback((val: boolean) => {
     setVisible(val);
   }, []);
 
-  useEffect(() => {
-    const bgCtx = Taro.getBackgroundAudioManager();
-    setBgCtx(bgCtx);
-  }, []);
-
   const time = useMemo<string>(() => {
-    if (bgCtx && mapState.currentTime) {
-      const time = bgCtx.duration - mapState.currentTime;
+    if (bgCtx && currentTime && duration) {
+      const time = duration - currentTime;
       return dayjs(time * 1000).format("mm:ss");
     }
     return "00:00";
-  }, [mapState.currentTime, bgCtx]);
+  }, [bgCtx, currentTime, duration]);
 
   return (
     <>
@@ -57,7 +50,7 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
               }}
             />
             <View className="play">
-              {mapState.play ? (
+              {play ? (
                 <PauseCircle
                   size={46}
                   onClick={() => {
@@ -74,7 +67,6 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
                       } else {
                         bgCtx.src = src;
                         bgCtx.title = "123";
-                        bgCtx.epname = "1233333";
                       }
                       setVisible(false);
                     }

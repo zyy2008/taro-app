@@ -2,7 +2,6 @@ import { Middleware, store } from "foca";
 import { taroStorage } from "foca-taro-storage";
 import { createLogger } from "redux-logger";
 import { mapModel } from "./models/map";
-import { audioModel } from "./models/audio";
 
 const middleware: Middleware[] = [];
 
@@ -25,7 +24,7 @@ store.init({
       version: "1",
       key: `foca-taro`,
       engine: taroStorage,
-      models: [mapModel, audioModel],
+      models: [mapModel],
     },
   ],
 });

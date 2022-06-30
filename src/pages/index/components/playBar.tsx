@@ -1,24 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Cell } from "@taroify/core";
 import { Cross, Play, Pause } from "@taroify/icons";
 import { Text } from "@tarojs/components";
-import Taro, { BackgroundAudioManager } from "@tarojs/taro";
 import "./playBar.scss";
-import { useModel } from "foca";
-import { audioModel, AudioState } from "@/store/models/audio";
+import { AudioContext } from "@/utils/context";
 
 const PlayBar: React.FC<{
   setVisible?: (T: boolean) => void;
   marker?: LocationInfo | null;
 }> = ({ setVisible, marker }) => {
-  const [bgCtx, setBgCtx] = useState<BackgroundAudioManager>();
-  const mapState = useModel<AudioState>(audioModel);
+  const { play, bgCtx } = useContext(AudioContext);
   const [title, setTitle] = useState<string>();
-
-  useEffect(() => {
-    const bgCtx = Taro.getBackgroundAudioManager();
-    setBgCtx(bgCtx);
-  }, []);
 
   useEffect(() => {
     if (marker) {
@@ -38,7 +30,7 @@ const PlayBar: React.FC<{
         />
       }
     >
-      {mapState.play ? (
+      {play ? (
         <Pause
           size={20}
           onClick={() => {
@@ -53,7 +45,7 @@ const PlayBar: React.FC<{
           }}
         />
       )}
-      <Text className="text">正在播放{bgCtx?.epname}简介</Text>
+      <Text className="text">正在播放{title}简介</Text>
     </Cell>
   );
 };

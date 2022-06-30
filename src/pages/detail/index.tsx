@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Cell, FixedView, Image, Empty } from "@taroify/core";
 import { View, Text } from "@tarojs/components";
 import "./index.scss";
@@ -11,6 +11,7 @@ const Detail: React.FC = () => {
   const router = useRouter();
   const mapState = useModel<MapState>(mapModel);
   const [info, setInfo] = useState<LocationInfo>();
+
   useEffect(() => {
     const { id } = router.params;
     if (Object.keys(mapState).length > 0 && id) {
