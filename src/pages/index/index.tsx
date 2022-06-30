@@ -100,8 +100,10 @@ const Index: React.FC = () => {
           markers={markers}
           onRegionChange={({ detail, causedBy, type }: any) => {
             if (type === "end") {
-              setScale(detail.scale);
-              setCenter(detail.centerLocation);
+              if (causedBy === "drag" || causedBy === "scale") {
+                setScale(detail.scale);
+                setCenter(detail.centerLocation);
+              }
             }
           }}
           onMarkerTap={(
