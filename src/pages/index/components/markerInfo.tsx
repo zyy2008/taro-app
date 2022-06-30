@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useMemo, useContext } from "react";
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useContext,
+  useEffect,
+} from "react";
 import { View, Text } from "@tarojs/components";
 import { Cell } from "@taroify/core";
 import "./markerInfo.scss";
@@ -26,6 +32,12 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
     }
     return "00:00";
   }, [bgCtx, currentTime, duration]);
+
+  useEffect(() => {
+    if (currentTime && play) {
+      setVisible(false);
+    }
+  }, [currentTime, play]);
 
   return (
     <>
