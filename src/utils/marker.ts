@@ -27,6 +27,7 @@ export function markersFormat(values: LocationInfo[]): MapProps.marker[] {
       id: create_time,
       latitude: location?.lat,
       longitude: location?.lng,
+      zIndex: -1,
       iconPath: (() => {
         switch (x.type) {
           case 1:

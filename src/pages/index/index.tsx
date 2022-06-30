@@ -101,6 +101,7 @@ const Index: React.FC = () => {
           onRegionChange={({ detail, causedBy, type }: any) => {
             if (type === "end") {
               setScale(detail.scale);
+              setCenter(detail.centerLocation);
             }
           }}
           onMarkerTap={(
