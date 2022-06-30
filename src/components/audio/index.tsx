@@ -8,7 +8,7 @@ import { AudioContext } from "@/utils/context";
 
 const src = "https://storage.360buyimg.com/jdrd-blog/27.mp3";
 
-const Audio: React.FC = () => {
+const Audio: React.FC<{ style?: React.CSSProperties }> = ({ style }) => {
   const [value, setValue] = useState<number>(0);
   const { play, bgCtx, currentTime, duration } = useContext(AudioContext);
 
@@ -29,6 +29,7 @@ const Audio: React.FC = () => {
         </View>
       }
       className="audio"
+      style={style}
     >
       {play ? (
         <PauseCircle

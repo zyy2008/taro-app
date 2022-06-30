@@ -42,7 +42,12 @@ const Detail: React.FC = () => {
         />
       </View>
       <View className="content">
-        <Audio />
+        <Audio
+          style={{
+            marginBottom: "40rpx",
+            marginTop: "20rpx",
+          }}
+        />
         {info?.x?.des ? (
           <Text className="text">{info?.x?.des}</Text>
         ) : (

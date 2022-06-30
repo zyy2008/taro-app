@@ -50,6 +50,7 @@ const Map: React.FC<
     <>
       <BaseMap
         {...others}
+        optimize
         style={{
           width: "100%",
           height: "100%",
