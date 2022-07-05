@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from "react";
 import Taro, { BackgroundAudioManager } from "@tarojs/taro";
 import { FocaProvider } from "foca";
 import "./app.scss";
-import { AudioContext } from "@/utils/context";
+import { AudioContext, QQMapContext, qqMapSdk } from "@/utils/context";
 
 const App: FC = ({ children }) => {
   const [play, setPlay] = useState<boolean>(false);
@@ -71,9 +71,11 @@ const App: FC = ({ children }) => {
   }, []);
   return (
     <FocaProvider>
-      <AudioContext.Provider value={{ play, duration, currentTime, bgCtx }}>
-        {children}
-      </AudioContext.Provider>
+      <QQMapContext.Provider value={qqMapSdk}>
+        <AudioContext.Provider value={{ play, duration, currentTime, bgCtx }}>
+          {children}
+        </AudioContext.Provider>
+      </QQMapContext.Provider>
     </FocaProvider>
   );
 };

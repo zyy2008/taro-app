@@ -1,11 +1,19 @@
 import { defineModel } from "foca";
 import { list } from "@/api/map";
 
+export type Line = {
+  title: string;
+  type: string;
+  tag: string;
+  polyline: string[];
+};
+
 export type MapState = {
   building?: LocationInfo[];
   ashcan?: LocationInfo[];
   service?: LocationInfo[];
   center: number[];
+  lines: Line[];
 };
 
 const initialState: MapState = {
@@ -13,6 +21,7 @@ const initialState: MapState = {
   ashcan: [],
   service: [],
   center: [],
+  lines: [],
 };
 
 export const mapModel = defineModel("map", {
@@ -23,6 +32,7 @@ export const mapModel = defineModel("map", {
       state.ashcan = mapState.ashcan ?? [];
       state.service = mapState.service ?? [];
       state.center = mapState.center ?? [];
+      state.lines = mapState.lines ?? [];
     },
   },
   effects: {
@@ -32,13 +42,34 @@ export const mapModel = defineModel("map", {
       const building: LocationInfo[] = [],
         ashcan: LocationInfo[] = [],
         service: LocationInfo[] = [],
-        center: number[] = [];
+        center: number[] = [],
+        lines: Line[] = [
+          {
+            title: "夏日纳凉路线",
+            type: "1",
+            tag: "夏日纳凉",
+            polyline: [],
+          },
+          {
+            title: "秋日赏银杏路线",
+            type: "2",
+            tag: "银杏路线",
+            polyline: [],
+          },
+          {
+            title: "宫廷历史生活线路",
+            tag: "宫廷历史生活",
+            type: "3",
+            polyline: [],
+          },
+        ];
       if (result?.count ?? 0 > 0) {
-        result?.data?.map((item) => {
-          const { x } = item;
+        for (let i = 0; i < result.data?.length; i++) {
+          const item = result.data[i];
+          const { x, location } = item;
           switch (x.type) {
             case 0:
-              center.push(...[item.location.lat, item.location.lng]);
+              center.push(...[location.lat, location.lng]);
               break;
             case 1:
               building.push(item);
@@ -52,13 +83,24 @@ export const mapModel = defineModel("map", {
             default:
               break;
           }
-        });
+          x.lines &&
+            lines.forEach((line) => {
+              const { type, polyline } = line;
+              if (x.lines.indexOf(type) != -1) {
+                line.polyline = [
+                  `${location.lat},${location.lng}`,
+                  ...polyline,
+                ];
+              }
+            });
+        }
       }
       this.setState({
         building,
         ashcan,
         service,
         center,
+        lines,
       });
     },
   },

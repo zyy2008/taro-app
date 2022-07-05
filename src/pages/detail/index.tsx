@@ -6,11 +6,29 @@ import { ShareBar, Audio } from "@/components/index";
 import { useRouter } from "@tarojs/taro";
 import { useModel } from "foca";
 import { mapModel, MapState } from "@/store/models/map";
+import { QQMapContext } from "@/utils/context";
 
 const Detail: React.FC = () => {
   const router = useRouter();
   const mapState = useModel<MapState>(mapModel);
   const [info, setInfo] = useState<LocationInfo>();
+  const qqCtx = useContext(QQMapContext);
+  const [distance, setDistance] = useState<string>();
+
+  useEffect(() => {
+    if (qqCtx && info) {
+      qqCtx.calculateDistance({
+        from: "",
+        to: `${info?.location.lat},${info?.location.lng}`,
+        success: ({ result }) => {
+          const { elements } = result;
+          const [item] = elements;
+          const hw = (item.distance / 1000).toFixed(2);
+          setDistance(hw);
+        },
+      });
+    }
+  }, [qqCtx, info]);
 
   useEffect(() => {
     const { id } = router.params;
@@ -36,7 +54,7 @@ const Detail: React.FC = () => {
           title={
             <View className="title">
               <Text className="name">{info?.title}</Text>
-              <Text className="distance">距你25公里</Text>
+              <Text className="distance">距你{distance}公里</Text>
             </View>
           }
         />

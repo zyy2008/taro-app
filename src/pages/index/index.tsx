@@ -29,7 +29,7 @@ const Index: React.FC = () => {
   const mapRef = useRef<MapHandle>(null);
   const [scale, setScale] = useState<number>(minScale);
   const [scrollIntoView, setScrollIntoView] = useState<string>("building");
-  const [marker, setMarker] = useState<MapProps.marker>();
+  const [marker, setMarker] = useState<LocationInfo>();
   const [center, setCenter] = useState<LocationCenter>({
     longitude: 0,
     latitude: 0,
@@ -42,8 +42,8 @@ const Index: React.FC = () => {
   const markers = useMemo<MapProps.marker[]>(() => {
     const values = mapState?.[scrollIntoView] as LocationInfo[];
     const filters = markersFilter(values, { scale, minScale });
-    return markersFormat(filters);
-  }, [mapState, scrollIntoView, scale]);
+    return markersFormat(filters, marker?.create_time ?? 0);
+  }, [mapState, scrollIntoView, scale, marker]);
 
   useEffect(() => {
     if (mapRef.current && mapState?.center && scrollIntoView) {
@@ -57,17 +57,6 @@ const Index: React.FC = () => {
       });
     }
   }, [scrollIntoView, mapState, mapRef]);
-
-  const markerInfo = useMemo<LocationInfo | null>(() => {
-    if (marker && scrollIntoView) {
-      const values = mapState?.[scrollIntoView] as LocationInfo[];
-      const [item] = values.filter(
-        ({ create_time }) => create_time === marker.id
-      );
-      return item;
-    }
-    return null;
-  }, [mapState, marker, scrollIntoView]);
 
   return (
     <Flex direction="column" className="home">
@@ -94,7 +83,6 @@ const Index: React.FC = () => {
           scale={scale}
           minScale={minScale}
           maxScale={20}
-          scrollIntoView={scrollIntoView}
           longitude={center.longitude}
           latitude={center.latitude}
           markers={markers}
@@ -112,12 +100,15 @@ const Index: React.FC = () => {
             const {
               detail: { markerId },
             } = res;
-            const [item] = markers?.filter(({ id }) => id === markerId) ?? [];
-            const { latitude, longitude } = item;
+            const values = mapState?.[scrollIntoView] as LocationInfo[];
+            const [item] =
+              values?.filter(({ create_time }) => create_time === markerId) ??
+              [];
+            const { lat, lng } = item.location;
             setMarker(item);
             setCenter({
-              latitude,
-              longitude,
+              latitude: lat,
+              longitude: lng,
             });
           }}
           onTap={() => {
@@ -126,14 +117,7 @@ const Index: React.FC = () => {
         >
           <CoverView slot="callout">
             {markers.map(({ id }) => (
-              <CoverView
-                markerId={`${id}`}
-                key={id}
-                className="callout"
-                style={{
-                  display: marker?.id === id ? "block" : "none",
-                }}
-              >
+              <CoverView markerId={`${id}`} key={id} className="callout">
                 <CoverImage src={base} className="background" />
                 <CoverImage src={img} className="img" />
               </CoverView>
@@ -151,7 +135,7 @@ const Index: React.FC = () => {
         >
           <Text className="text">游览线路</Text>
         </Button>
-        <MarkerInfo marker={markerInfo} />
+        <MarkerInfo marker={marker} />
       </Flex.Item>
     </Flex>
   );

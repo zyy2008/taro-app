@@ -1,5 +1,10 @@
 export default defineAppConfig({
-  pages: ["pages/index/index", "pages/lines/index", "pages/detail/index"],
+  pages: [
+    "pages/index/index",
+    "pages/lines/index",
+    "pages/detail/index",
+    "pages/routeMap/index",
+  ],
   requiredBackgroundModes: ["audio", "location"],
   window: {
     backgroundTextStyle: "light",

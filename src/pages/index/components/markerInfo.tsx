@@ -13,13 +13,30 @@ import Taro from "@tarojs/taro";
 import dayjs from "dayjs";
 import PlayBar from "./playBar";
 import { ShareBar } from "@/components/index";
-import { AudioContext } from "@/utils/context";
+import { AudioContext, QQMapContext } from "@/utils/context";
 
 const src = "https://storage.360buyimg.com/jdrd-blog/27.mp3";
 
 const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
   const [visible, setVisible] = useState<boolean>(true);
   const { play, bgCtx, currentTime, duration } = useContext(AudioContext);
+  const qqCtx = useContext(QQMapContext);
+  const [distance, setDistance] = useState<string>();
+
+  useEffect(() => {
+    if (qqCtx && marker) {
+      qqCtx.calculateDistance({
+        from: "",
+        to: `${marker?.location.lat},${marker?.location.lng}`,
+        success: ({ result }) => {
+          const { elements } = result;
+          const [item] = elements;
+          const hw = (item.distance / 1000).toFixed(2);
+          setDistance(hw);
+        },
+      });
+    }
+  }, [qqCtx, marker]);
 
   const useVisible = useCallback((val: boolean) => {
     setVisible(val);
@@ -50,7 +67,7 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
               title={
                 <View className="info-view">
                   <Text className="title">{marker.title}</Text>
-                  <Text className="distance">距你45公里</Text>
+                  <Text className="distance">距你{distance}公里</Text>
                   <Text className="des">{marker.x.des}</Text>
                 </View>
               }

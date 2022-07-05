@@ -3,7 +3,6 @@ import { Map as BaseMap, MapProps, BaseEventOrig } from "@tarojs/components";
 import { Toast, Button } from "@taroify/core";
 import Taro, { MapContext } from "@tarojs/taro";
 import "./index.scss";
-// import QQMapWX from "@/labs/qqmap-wx-jssdk.min.js";
 import { contain } from "@/api/map";
 import { mapModel } from "@/store/models/map";
 import { Aim } from "@taroify/icons";
@@ -26,10 +25,9 @@ const apiContain = async (location: string) => {
 
 const Map: React.FC<
   {
-    scrollIntoView: string;
     children?: React.ReactNode;
   } & MapProps
-> = React.forwardRef(({ children, scrollIntoView, ...others }, ref) => {
+> = React.forwardRef(({ children, ...others }, ref) => {
   const [mapCtx, setMapCtx] = useState<MapContext>();
   const [location, setLocation] = useState<string>("");
   useEffect(() => {
