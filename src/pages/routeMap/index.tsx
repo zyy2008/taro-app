@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { View, Text } from "@tarojs/components";
 import "./index.scss";
 import { useRouter } from "@tarojs/taro";
-import { Swiper, Cell, Space } from "@taroify/core";
+import { Swiper, Cell, Space, Button } from "@taroify/core";
 import { MapLine } from "./components";
 import { useModel } from "foca";
 import { mapModel, MapState, Line } from "@/store/models/map";
@@ -53,8 +53,9 @@ const SwiperItem: React.FC<Line & { setPolyline?: (T: Polyline) => void }> = ({
     <Swiper.Item __dataIndex__={Number(type)}>
       <View className="item">
         <Cell
+          className="cell"
           title={
-            <View>
+            <View className="info">
               <Text className="title">{title}</Text>
               <Space>
                 <Text>{`${polyline?.length ?? 0}个景点`}</Text>
@@ -69,7 +70,9 @@ const SwiperItem: React.FC<Line & { setPolyline?: (T: Polyline) => void }> = ({
           }
           align="center"
         >
-          123
+          <Button color="primary" className="button">
+            开始游览
+          </Button>
         </Cell>
       </View>
     </Swiper.Item>

@@ -14,7 +14,7 @@
 .swiper {
   position: absolute;
   z-index: 1;
-  bottom: 20px;
+  bottom: 40px;
   left: 0;
   right: 0;
   padding: 0 40px;
@@ -23,9 +23,21 @@
   padding: 10px 5px;
 }
 
-.card {
+.cell {
   width: 100%;
-  height: 200px;
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 20px;
+  height: 230px;
+  .taroify-cell__value {
+    flex: none;
+  }
+  .title {
+    font-size: 30px;
+  }
+}
+
+.button {
+  border-radius: 100%;
+  width: 120px;
+  height: 120px;
 }
