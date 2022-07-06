@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { View } from "@tarojs/components";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { View, Text } from "@tarojs/components";
 import "./index.scss";
 import { useRouter } from "@tarojs/taro";
-import { Swiper } from "@taroify/core";
+import { Swiper, Cell, Space } from "@taroify/core";
 import { MapLine } from "./components";
 import { useModel } from "foca";
 import { mapModel, MapState, Line } from "@/store/models/map";
@@ -12,24 +12,65 @@ type Params = {
   type: string;
 };
 
-const SwiperItem: React.FC<Line> = ({ type, title }) => {
+type Polyline = Pick<FormatLine, "polyline"> & {
+  lineData: string[];
+  type: string;
+};
+
+const SwiperItem: React.FC<Line & { setPolyline?: (T: Polyline) => void }> = ({
+  type,
+  title,
+  setPolyline,
+}) => {
   const { lines } = useModel<MapState>(mapModel);
   const [lineInfo, setLineInfo] = useState<Omit<FormatLine, "polyline">>({
     distance: 0,
     duration: 0,
   });
-  useEffect(() => {
+
+  const polyline = useMemo<string[]>(() => {
     if (type && (lines?.length ?? 0) > 0) {
       const [{ polyline }] = lines.filter((item) => item.type === type);
-      formatLine(polyline).then((res) => {
-        setLineInfo(res);
+      return polyline;
+    }
+    return [];
+  }, [type, lines]);
+
+  useEffect(() => {
+    if ((polyline.length ?? 0) > 0) {
+      formatLine(polyline).then(({ polyline: line, ...others }) => {
+        setPolyline?.({
+          type,
+          lineData: polyline,
+          polyline: line,
+        });
+        setLineInfo(others);
       });
     }
-  }, [type, lines]);
+  }, [polyline, setPolyline, type]);
+
   return (
     <Swiper.Item __dataIndex__={Number(type)}>
       <View className="item">
-        <View className="card">{title}</View>
+        <Cell
+          title={
+            <View>
+              <Text className="title">{title}</Text>
+              <Space>
+                <Text>{`${polyline?.length ?? 0}个景点`}</Text>
+                <Text>{`约${((lineInfo.duration ?? 0) / 60).toFixed(
+                  1
+                )}个小时`}</Text>
+                <Text>{`${((lineInfo.distance ?? 0) / 1000).toFixed(
+                  2
+                )}公里`}</Text>
+              </Space>
+            </View>
+          }
+          align="center"
+        >
+          123
+        </Cell>
       </View>
     </Swiper.Item>
   );
@@ -39,17 +80,30 @@ const RouteMap: React.FC = () => {
   const { params } = useRouter<Params>();
   const [value, setValue] = useState<number>(0);
   const { lines } = useModel<MapState>(mapModel);
+  const [polyline, setPolyline] = useState<Polyline[]>([]);
+
+  const usePolyline = useCallback((value: Polyline) => {
+    setPolyline((val) => {
+      return [value, ...val];
+    });
+  }, []);
+
   useEffect(() => {
-    setValue(Number(params.type));
+    setValue(Number(params.type) - 1);
   }, [params.type]);
+
+  const lineItem = useMemo<Polyline>(() => {
+    const [item] = polyline.filter(({ type }) => type === String(value + 1));
+    return item;
+  }, [value, polyline]);
 
   return (
     <View className="route">
-      <MapLine type={String(value)} />
+      <MapLine lineData={lineItem?.lineData} polyline={lineItem?.polyline} />
       <Swiper className="swiper" loop={false} value={value} onChange={setValue}>
         <Swiper.Indicator />
         {lines.map((item) => (
-          <SwiperItem {...item} key={item.type} />
+          <SwiperItem {...item} key={item.type} setPolyline={usePolyline} />
         ))}
       </Swiper>
     </View>

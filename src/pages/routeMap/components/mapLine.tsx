@@ -4,19 +4,18 @@ import { useModel } from "foca";
 import { mapModel, MapState } from "@/store/models/map";
 import yuan from "@/assets/marker/yuan.png";
 import { Map } from "@/components/index";
-import { formatLine } from "@/utils/index";
 
 type MapLineProps = {
-  type: string;
+  lineData: string[];
+  polyline: MapProps.polyline[];
 };
 
 const minScale: number = 14.5;
 
-const MapLine: React.FC<MapLineProps> = ({ type }) => {
+const MapLine: React.FC<MapLineProps> = ({ lineData = [], polyline = [] }) => {
   const mapState = useModel<MapState>(mapModel);
   const [scale, setScale] = useState<number>(minScale);
   const [markers, setMarkers] = useState<MapProps.marker[]>([]);
-  const [polyline, setPolyline] = useState<MapProps.polyline[]>([]);
   const [center, setCenter] = useState<LocationCenter>({
     longitude: 0,
     latitude: 0,
@@ -34,14 +33,12 @@ const MapLine: React.FC<MapLineProps> = ({ type }) => {
     }
   }, [mapState, mapState?.center]);
   useEffect(() => {
-    const { lines } = mapState;
-    if (type && type != "0" && (lines?.length ?? 0) > 0) {
-      const [{ polyline }] = lines?.filter((item) => item.type === type);
+    if (lineData.length > 0) {
       setMarkers(
-        polyline.map((item, index) => {
+        lineData.map((item, index) => {
           const [latitude, longitude] = item.split(",");
           return {
-            id: index,
+            id: index + 1,
             latitude: Number(latitude),
             longitude: Number(longitude),
             iconPath: yuan,
@@ -70,11 +67,8 @@ const MapLine: React.FC<MapLineProps> = ({ type }) => {
           };
         })
       );
-      formatLine(polyline).then(({ polyline: line }) => {
-        setPolyline(line);
-      });
     }
-  }, [type, mapState.lines, mapState]);
+  }, [lineData]);
   return (
     <Map
       scale={scale}
