@@ -43,7 +43,6 @@ export function markersFormat(
         })(),
         width: 35,
         height: 41,
-
         anchor: { x: 0, y: 1 },
         label: {
           fontSize: 12,

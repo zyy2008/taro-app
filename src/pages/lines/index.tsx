@@ -5,9 +5,8 @@ import "./index.scss";
 import { useModel } from "foca";
 import { mapModel, MapState, Line } from "@/store/models/map";
 import { QQMapContext } from "@/utils/context";
-import { walking } from "@/api/map";
 import Taro from "@tarojs/taro";
-import { wait } from "@/utils/index";
+import { formatLine } from "@/utils/index";
 
 const LineItem: React.FC<Line> = ({ title, tag, type, polyline }) => {
   const [time, setTime] = useState<number>();
@@ -15,34 +14,10 @@ const LineItem: React.FC<Line> = ({ title, tag, type, polyline }) => {
   const qqCtx = useContext(QQMapContext);
   useEffect(() => {
     if (qqCtx && polyline.length > 0) {
-      let duration: number = 0;
-      let distance: number = 0;
-      const format: string[][] = [];
-      for (let i = 0; i < polyline.length; i++) {
-        if (i === polyline.length - 1) {
-          continue;
-        } else {
-          format.push([polyline[i], polyline[i + 1]]);
-        }
-      }
-      (async () => {
-        for (const [from, to] of format) {
-          const { data } = await walking({
-            from,
-            to,
-          });
-          const { result, status } = data;
-          if (status === 0) {
-            const { routes } = result;
-            const [item] = routes;
-            duration = duration + item.duration;
-            distance = distance + item.distance;
-          }
-          await wait(800);
-        }
+      formatLine(polyline).then(({ duration, distance }) => {
         setTime(duration);
         setDistance(distance);
-      })();
+      });
     }
   }, [qqCtx, type, polyline]);
   return (
