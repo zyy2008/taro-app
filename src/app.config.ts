@@ -4,6 +4,7 @@ export default defineAppConfig({
     "pages/lines/index",
     "pages/detail/index",
     "pages/routeMap/index",
+    "pages/tour/index",
   ],
   requiredBackgroundModes: ["audio", "location"],
   window: {

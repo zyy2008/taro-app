@@ -5,7 +5,7 @@ export type Line = {
   title: string;
   type: string;
   tag: string;
-  polyline: string[];
+  polyline: LocationInfo[];
 };
 
 export type MapState = {
@@ -87,10 +87,7 @@ export const mapModel = defineModel("map", {
             lines.forEach((line) => {
               const { type, polyline } = line;
               if (x.lines.indexOf(type) != -1) {
-                line.polyline = [
-                  `${location.lat},${location.lng}`,
-                  ...polyline,
-                ];
+                line.polyline = [item, ...polyline];
               }
             });
         }

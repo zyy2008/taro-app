@@ -24,7 +24,9 @@ export async function formatLine(
     if (i === polyline.length - 1) {
       continue;
     } else {
-      format.push([polyline[i], polyline[i + 1]]);
+      const { location: form } = polyline[i];
+      const { location: to } = polyline[i + 1];
+      format.push([`${form.lat},${form.lng}`, `${to.lat},${to.lng}`]);
     }
   }
 

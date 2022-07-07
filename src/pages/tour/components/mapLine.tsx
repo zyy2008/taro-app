@@ -1,18 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { MapProps, CoverView } from "@tarojs/components";
+import React, { useState, useEffect, useRef } from "react";
+import { MapProps, CoverView, CoverImage } from "@tarojs/components";
 import { useModel } from "foca";
 import { mapModel, MapState, Line } from "@/store/models/map";
 import yuan from "@/assets/marker/yuan.png";
-import { Map } from "@/components/index";
+import { Map, MapHandle } from "@/components/index";
+import base from "@/assets/marker/base.png";
+import img from "@/assets/1.jpg";
+import "./mapLine.scss";
 
 type MapLineProps = {
   lineData: Line["polyline"];
   polyline: MapProps.polyline[];
+  markerId: number;
 };
 
 const minScale: number = 14.5;
 
-const MapLine: React.FC<MapLineProps> = ({ lineData = [], polyline = [] }) => {
+const MapLine: React.FC<MapLineProps> = ({
+  lineData = [],
+  polyline = [],
+  markerId,
+}) => {
+  const mapRef = useRef<MapHandle>();
   const mapState = useModel<MapState>(mapModel);
   const [scale, setScale] = useState<number>(minScale);
   const [markers, setMarkers] = useState<MapProps.marker[]>([]);
@@ -33,10 +42,23 @@ const MapLine: React.FC<MapLineProps> = ({ lineData = [], polyline = [] }) => {
     }
   }, [mapState, mapState?.center]);
   useEffect(() => {
+    if (mapRef.current?.mapCtx) {
+      const [
+        {
+          location: { lat, lng },
+        },
+      ] = lineData.filter(({ create_time }) => create_time === markerId);
+      mapRef.current?.mapCtx.moveToLocation({
+        latitude: lat,
+        longitude: lng,
+      });
+    }
+  }, [lineData, markerId, mapRef.current?.mapCtx]);
+  useEffect(() => {
     if (lineData.length > 0) {
       setMarkers(
         lineData.map(({ location: { lat, lng }, title, create_time }) => {
-          return {
+          const marker: MapProps.marker = {
             id: create_time,
             latitude: lat,
             longitude: lng,
@@ -45,7 +67,7 @@ const MapLine: React.FC<MapLineProps> = ({ lineData = [], polyline = [] }) => {
             height: 30,
             customCallout: {
               display: "ALWAYS",
-              anchorY: 30,
+              anchorY: 25,
               anchorX: 0,
             },
             label: {
@@ -64,12 +86,14 @@ const MapLine: React.FC<MapLineProps> = ({ lineData = [], polyline = [] }) => {
               borderWidth: 0,
             },
           };
+          return marker;
         })
       );
     }
   }, [lineData]);
   return (
     <Map
+      ref={mapRef}
       scale={scale}
       minScale={minScale}
       maxScale={20}
@@ -80,8 +104,14 @@ const MapLine: React.FC<MapLineProps> = ({ lineData = [], polyline = [] }) => {
     >
       <CoverView slot="callout">
         {markers.map(({ id }, index) => (
-          <CoverView markerId={`${id}`} key={id} className="callout">
-            {index + 1}
+          <CoverView markerId={`${id}`} key={id}>
+            {markerId === id && (
+              <CoverView className="callout-line">
+                <CoverImage src={base} className="background" />
+                <CoverImage src={img} className="img" />
+              </CoverView>
+            )}
+            <CoverView className="callout-text">{index + 1}</CoverView>
           </CoverView>
         ))}
       </CoverView>

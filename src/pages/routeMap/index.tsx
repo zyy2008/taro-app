@@ -1,19 +1,19 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { View, Text } from "@tarojs/components";
-import "./index.scss";
-import { useRouter } from "@tarojs/taro";
+import Taro, { useRouter } from "@tarojs/taro";
 import { Swiper, Cell, Space, Button } from "@taroify/core";
 import { MapLine } from "./components";
 import { useModel } from "foca";
 import { mapModel, MapState, Line } from "@/store/models/map";
 import { formatLine, FormatLine } from "@/utils/index";
+import "./index.scss";
 
 type Params = {
   type: string;
 };
 
 type Polyline = Pick<FormatLine, "polyline"> & {
-  lineData: string[];
+  lineData: Line["polyline"];
   type: string;
 };
 
@@ -28,7 +28,7 @@ const SwiperItem: React.FC<Line & { setPolyline?: (T: Polyline) => void }> = ({
     duration: 0,
   });
 
-  const polyline = useMemo<string[]>(() => {
+  const polyline = useMemo<Line["polyline"]>(() => {
     if (type && (lines?.length ?? 0) > 0) {
       const [{ polyline }] = lines.filter((item) => item.type === type);
       return polyline;
@@ -50,7 +50,7 @@ const SwiperItem: React.FC<Line & { setPolyline?: (T: Polyline) => void }> = ({
   }, [polyline, setPolyline, type]);
 
   return (
-    <Swiper.Item __dataIndex__={Number(type)}>
+    <Swiper.Item>
       <View className="item">
         <Cell
           className="cell"
@@ -70,7 +70,16 @@ const SwiperItem: React.FC<Line & { setPolyline?: (T: Polyline) => void }> = ({
           }
           align="center"
         >
-          <Button color="primary" className="button">
+          <Button
+            color="primary"
+            className="button"
+            onClick={() => {
+              Taro.navigateTo({
+                // url: "/pages/lines/index",
+                url: `/pages/tour/index?type=${type}`,
+              });
+            }}
+          >
             开始游览
           </Button>
         </Cell>

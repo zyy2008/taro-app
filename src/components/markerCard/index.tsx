@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { View, Text } from "@tarojs/components";
 import { Cell } from "@taroify/core";
-import "./markerInfo.scss";
+import "./index.scss";
 import { PlayCircle, PauseCircle } from "@taroify/icons";
 import Taro from "@tarojs/taro";
 import dayjs from "dayjs";
@@ -17,7 +17,12 @@ import { AudioContext, QQMapContext } from "@/utils/context";
 
 const src = "https://storage.360buyimg.com/jdrd-blog/27.mp3";
 
-const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
+const MarkerCard: React.FC<{
+  marker?: LocationInfo | null;
+  style?: React.CSSProperties;
+  lineClamp?: number;
+  icon?: React.ReactNode;
+}> = ({ marker, style, lineClamp = 2, icon }) => {
   const [visible, setVisible] = useState<boolean>(true);
   const { play, bgCtx, currentTime, duration } = useContext(AudioContext);
   const qqCtx = useContext(QQMapContext);
@@ -60,15 +65,23 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
     <>
       {!visible && <PlayBar setVisible={useVisible} marker={marker} />}
       {marker && (
-        <View className="card">
+        <View className="card" style={style}>
           <View className="info">
             <Cell
+              icon={icon}
               clickable
               title={
                 <View className="info-view">
                   <Text className="title">{marker.title}</Text>
                   <Text className="distance">距你{distance}公里</Text>
-                  <Text className="des">{marker.x.des}</Text>
+                  <Text
+                    className="des"
+                    style={{
+                      WebkitLineClamp: lineClamp,
+                    }}
+                  >
+                    {marker.x.des}
+                  </Text>
                 </View>
               }
               className="text"
@@ -114,4 +127,4 @@ const MarkerInfo: React.FC<{ marker?: LocationInfo | null }> = ({ marker }) => {
   );
 };
 
-export default MarkerInfo;
+export default MarkerCard;

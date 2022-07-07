@@ -6,8 +6,8 @@ import React, {
   useState,
 } from "react";
 import { Flex, Button } from "@taroify/core";
-import { Header, MarkerInfo } from "./components";
-import { Map, MapHandle } from "@/components/index";
+import { Header } from "./components";
+import { Map, MapHandle, MarkerCard } from "@/components/index";
 import {
   MapProps,
   Text,
@@ -130,12 +130,13 @@ const Index: React.FC = () => {
           onClick={() => {
             Taro.navigateTo({
               url: "/pages/lines/index",
+              // url: "/pages/tour/index?type=1",
             });
           }}
         >
           <Text className="text">游览线路</Text>
         </Button>
-        <MarkerInfo marker={marker} />
+        <MarkerCard marker={marker} />
       </Flex.Item>
     </Flex>
   );

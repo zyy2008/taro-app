@@ -1,0 +1,22 @@
+.callout-line {
+  width: 105px;
+  height: 118px;
+  position: relative;
+  .img {
+    border-radius: 100%;
+    width: 85px;
+    height: 85px;
+    z-index: 99;
+    position: absolute;
+    left: 0;
+    top: 10px;
+    margin: auto;
+    right: 0;
+    border: 1px solid red;
+  }
+}
+
+.callout-text {
+  text-align: center;
+  padding-top: 20px;
+}
