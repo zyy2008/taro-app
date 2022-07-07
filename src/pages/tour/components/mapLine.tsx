@@ -57,40 +57,61 @@ const MapLine: React.FC<MapLineProps> = ({
   useEffect(() => {
     if (lineData.length > 0) {
       setMarkers(
-        lineData.map(({ location: { lat, lng }, title, create_time }) => {
-          const marker: MapProps.marker = {
-            id: create_time,
-            latitude: lat,
-            longitude: lng,
-            iconPath: yuan,
-            width: 30,
-            height: 30,
-            customCallout: {
-              display: "ALWAYS",
-              anchorY: 25,
-              anchorX: 0,
-            },
-            label: {
-              fontSize: 12,
-              padding: 5,
-              content: title,
-              color: "#fff",
-              bgColor: "#00000070",
-              borderRadius: 2,
-              textAlign: "center",
-              anchorY: 1,
-              anchorX: 0,
-              x: 0,
-              y: 0,
-              borderColor: "none",
-              borderWidth: 0,
-            },
-          };
-          return marker;
-        })
+        lineData.map(
+          ({ location: { lat, lng }, title, create_time }, index) => {
+            const marker: MapProps.marker = {
+              id: create_time,
+              latitude: lat,
+              longitude: lng,
+              iconPath: yuan,
+              width: 30,
+              height: 30,
+              callout: {
+                content: `${index + 1}`,
+                color: "#000000",
+                fontSize: 12,
+                anchorX: 0,
+                anchorY: 25,
+                borderRadius: 0,
+                borderWidth: 0,
+                borderColor: "none",
+                bgColor: "none",
+                padding: 0,
+                display: "ALWAYS",
+                textAlign: "center",
+              },
+              label: {
+                fontSize: 12,
+                padding: 5,
+                content: title,
+                color: "#fff",
+                bgColor: "#00000070",
+                borderRadius: 2,
+                textAlign: "center",
+                anchorY: 1,
+                anchorX: 0,
+                x: 0,
+                y: 0,
+                borderColor: "none",
+                borderWidth: 0,
+              },
+            };
+            if (markerId === create_time) {
+              return {
+                ...marker,
+                customCallout: {
+                  display: "ALWAYS",
+                  anchorY: 25,
+                  anchorX: 0,
+                },
+              };
+            }
+            return marker;
+          }
+        )
       );
     }
-  }, [lineData]);
+  }, [lineData, markerId]);
   return (
     <Map
       ref={mapRef}
@@ -105,12 +126,10 @@ const MapLine: React.FC<MapLineProps> = ({
       <CoverView slot="callout">
         {markers.map(({ id }, index) => (
           <CoverView markerId={`${id}`} key={id}>
-            {markerId === id && (
-              <CoverView className="callout-line">
-                <CoverImage src={base} className="background" />
-                <CoverImage src={img} className="img" />
-              </CoverView>
-            )}
+            <CoverView className="callout-line">
+              <CoverImage src={base} className="background" />
+              <CoverImage src={img} className="img" />
+            </CoverView>
             <CoverView className="callout-text">{index + 1}</CoverView>
           </CoverView>
         ))}
